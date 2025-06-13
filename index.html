@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>grown a garden Web edition</title>
+<link rel="icon" type="image/png" href="https://noping.com/_next/image?url=https%3A%2F%2Fblogadmin.noping.com%2Fwp-content%2Fuploads%2F2025%2F05%2Fgrowagarden-1747688567733.jpg&amp;w=1920&amp;q=75" />
+<style>
+  /* Reset e base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    min-height: 100%;
+    color: #1e293b;
+    user-select: none;
+  }
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+  }
+  header {
+    background: rgba(255 255 255 / 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    padding: 1rem 2rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #0f172a;
+    text-align: center;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #start-screen, #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    position: relative;
+    padding: 20px;
+  }
+  #start-screen img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border-radius: 24px;
+  }
+  #start-button, #login-button {
+    background: #00bcd4;
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 15px rgba(0,188,212,0.5);
+    width: 220px;
+  }
+  #start-button:hover, #login-button:hover {
+    background: #0097a7;
+    box-shadow: 0 8px 20px rgba(0,151,167,0.7);
+  }
+  #login-screen {
+    display: none;
+  }
+  #login-screen label {
+    font-weight: 600;
+    margin-top: 14px;
+    font-size: 1rem;
+    color: #084c61;
+  }
+  #login-screen input, #login-screen select {
+    margin: 8px 0 20px 0;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1.5px solid #00bcd4;
+    width: 260px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  #login-screen input:focus, #login-screen select:focus {
+    border-color: #0097a7;
+    outline: none;
+    box-shadow: 0 0 8px #00bcd4aa;
+  }
+  /* Container do jogo inicialmente escondido */
+  #game-container {
+    margin-top: 1rem;
+    background: rgba(255 255 255 / 0.95);
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+    width: 1200px;
+    max-width: 95vw;
+    padding: 24px;
+    display: none; /* inicialmente escondido */
+    gap: 32px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #garden-canvas {
+    background: #77b255; /* Chão verde */
+    border-radius: 16px;
+    display: block;
+    box-shadow: inset 0 8px 16px #4b772c;
+    flex: 1 1 768px;
+    max-width: 768px;
+    height: 512px;
+  }
+  #info-panel {
+    max-width: 320px;
+    font-weight: 600;
+    color: #05445e;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #e0f7fa;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,108,134,0.15);
+  }
+  #info-panel h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    color: #007c91;
+    text-align: center;
+  }
+  #coin-count {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #00647e;
+    font-weight: 700;
+  }
+  .btn {
+    background: #00bcd4;
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 14px 24px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 16px rgba(0,188,212,0.5);
+    width: 100%;
+  }
+  .btn:disabled {
+    background: #81d4fa;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .btn:hover:not(:disabled) {
+    background: #0097a7;
+    box-shadow: 0 8px 24px rgba(0,151,167,0.7);
+  }
+  #inventory {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    height: 180px;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  #inventory h3 {
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    color: #007c91;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  #inventory-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .inventory-item {
+    background: #00bcd4;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+    user-select: none;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0,188,212,0.4);
+    transition: background-color 0.3s ease;
+  }
+  .inventory-item:hover {
+    background: #0097a7;
+  }
+  /* Lojinha modal (vendedor frutas) */
+  #shop-modal-fruits {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255 255 255 / 0.98);
+    border-radius: 24px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+    width: 320px;
+    max-width: 90vw;
+    padding: 24px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+  }
+  #shop-modal-fruits h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #007c91;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  #shop-list-fruits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 360px;
+    overflow-y: auto;
+    border-radius: 16px;
+  }
+  #shop-list-fruits li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: #b2ebf2;
+    margin-bottom: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #007c91;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 1rem;
+  }
+  #shop-list-fruits li:hover,
+  #shop-list-fruits li:focus {
+    background: #00bcd4;
+    color: white;
+    outline: none;
+  }
+  #shop-close-btn-fruits {
+    background: #e74c3c;
+    padding: 12px;
+    border-radius: 16px;
+    color: white;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    align-self: center;
+    margin-top: 12px;
+    transition: background-color 0.3s ease;
+    width: 160px;
+    font-size: 1rem;
+    box-shadow: 0 6px 18px rgba(231,76,60,0.7);
+  }
+  #shop-close-btn-fruits:hover {
+    background: #c0392b;
+    box-shadow: 0 8px 24px rgba(192,57,43,0.7);
+  }
+
+  /* Info vendedores simplificado */
+  #seller-info-fruits, #seller-info-seeds, #seller-info-pet {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-weight: 700;
+    color: #006064;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 350px;
+    margin: 12px;
+    user-select: none;
+    font-size: 1rem;
+  }
+  #seller-info-fruits img, #seller-info-seeds img, #seller-info-pet img {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    object-fit: contain;
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+  }
+  #seller-info-fruits span, #seller-info-seeds span, #seller-info-pet span {
+    flex: 1;
+    color: #007c91;
+  }
+
+  /* Mobile controls */
+  #mobile-controls {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    z-index: 99;
+    user-select: none;
+    max-width: 600px;
+    width: 90vw;
+    background: rgba(255 255 255 / 0.9);
+    border-radius: 24px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    padding: 10px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .mobile-btn {
+    background: #00bcd4;
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 14px 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 6px 15px rgba(0,188,212,0.5);
+    user-select: none;
+    min-width: 60px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  .mobile-btn:active {
+    background: #0097a7;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 960px) {
+    #game-container {
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      width: 100vw;
+      max-width: 100vw;
+    }
+    #garden-canvas {
+      max-width: 90vw;
+      width: 90vw;
+      height: calc(90vw * 2 / 3);
+    }
+    #info-panel {
+      max-width: 90vw;
+      width: 90vw;
+      margin-top: 24px;
+    }
+    #seller-info-fruits, #seller-info-seeds, #seller-info-pet {
+      max-width: 90vw;
+      margin: 10px auto;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="start-screen" aria-label="Tela inicial">
+  <img src="https://noping.com/_next/image?url=https%3A%2F%2Fblogadmin.noping.com%2Fwp-content%2Fuploads%2F2025%2F05%2Fgrowagarden-1747688567733.jpg&amp;w=1920&amp;q=75" alt="Grow a Garden Logo" />
+  <button id="start-button" aria-label="Iniciar jogo">Iniciar Jogo</button>
+</div>
+
+<div id="login-screen" aria-label="Tela de login">
+  <h2>Login do Jogador</h2>
+  <input type="text" id="username" placeholder="Nome" aria-required="true" aria-label="Nome" />
+  <input type="password" id="password" placeholder="Senha" aria-required="true" aria-label="Senha" />
+  <label for="gender">Gênero:</label>
+  <select id="gender" aria-label="Seleção de gênero">
+    <option value="masculino">Masculino</option>
+    <option value="feminino">Feminino</option>
+  </select>
+  <button id="login-button" aria-label="Entrar no jogo">Entrar</button>
+</div>
+
+<div id="game-container" role="main" aria-label="Área do jogo" aria-hidden="true">
+  <canvas id="garden-canvas" width="768" height="512" aria-label="Área do Jardim 2D"></canvas>
+  <div id="info-panel" aria-live="polite" aria-atomic="true">
+    <h2>Informações</h2>
+    <div id="coin-count" aria-live="polite" aria-atomic="true">Moedas: 100</div>
+    <button id="plant-btn" class="btn" aria-label="Plantar semente">Plantar semente na posição do personagem</button>
+    <button id="harvest-btn" class="btn" aria-label="Colher planta madura na posição do personagem">Colher planta madura na posição do personagem</button>
+    <div id="inventory" aria-label="Inventário do jogador" tabindex="0">
+      <h3>Inventário</h3>
+      <div id="inventory-list" role="list"></div>
+    </div>
+    <p><strong>Controles:</strong> Use as setas ou WASD para mover o personagem. Pressione <kbd>E</kbd> próximo ao vendedor de frutas para abrir a lojinha de vendas. Pressione <kbd>Q</kbd> próximo ao vendedor de sementes para abrir a loja de sementes e comprar. O crescimento das plantas é automático (aprox. 1 minuto por planta). Colha a planta quando estiver madura.</p>
+  </div>
+
+  <div id="seller-info-fruits" aria-label="Vendedor de frutas">
+    <img src="https://pbs.twimg.com/media/EXV9DNhVcAEJz1l.png" alt="Imagem do vendedor de frutas estilizado" class="seller-img" />
+    <span>Vendedor de frutas: <kbd>E</kbd> abre a loja</span>
+  </div>
+
+  <div id="seller-info-seeds" aria-label="Vendedor de sementes">
+    <img src="https://i.pinimg.com/originals/82/7f/ba/827fba5fcec845b8990afcde7d9d0926.png" alt="Imagem do vendedor de sementes estilizado" class="seller-img" />
+    <span>Vendedor de sementes: <kbd>Q</kbd> abre a loja</span>
+  </div>
+
+  <div id="seller-info-pet" aria-label="Amigo Pet">
+    <img src="https://static.wikia.nocookie.net/growagarden/images/8/89/Catpet.png/revision/latest?cb=20250503200101" alt="Sprite do pet, gato pequeno estilo desenho animado, colorido e simpático" />
+    <span>Pet amigo: reduz 5 segundos do tempo de espera das frutas, custa 2000 moedas</span>
+  </div>
+  
+  <div id="shop-modal-fruits" role="dialog" aria-modal="true" aria-labelledby="shop-title-fruits" tabindex="-1">
+    <h3 id="shop-title-fruits">Lojinha do Vendedor (Frutas)</h3>
+    <ul id="shop-list-fruits" tabindex="0" aria-label="Frutas para vender"></ul>
+    <button id="shop-close-btn-fruits" aria-label="Fechar lojinha">Fechar</button>
+  </div>
+
+  <div id="shop-modal-seeds" role="dialog" aria-modal="true" aria-labelledby="shop-title-seeds" tabindex="-1" style="width: 360px;">
+    <h3 id="shop-title-seeds">Lojinha do Vendedor (Sementes)</h3>
+    <ul id="shop-list-seeds" tabindex="0" aria-label="Sementes para comprar"></ul>
+    <button id="shop-close-btn-seeds" aria-label="Fechar lojinha">Fechar</button>
+  </div>
+</div>
+
+<!-- Mobile controls -->
+<div id="mobile-controls" aria-label="Controles para dispositivos móveis">
+  <button class="mobile-btn" id="btn-up" aria-label="Mover para cima">↑</button>
+  <button class="mobile-btn" id="btn-left" aria-label="Mover para esquerda">←</button>
+  <button class="mobile-btn" id="btn-down" aria-label="Mover para baixo">↓</button>
+  <button class="mobile-btn" id="btn-right" aria-label="Mover para direita">→</button>
+  <button class="mobile-btn" id="btn-plant" aria-label="Plantar semente">Plantar</button>
+  <button class="mobile-btn" id="btn-harvest" aria-label="Colher planta">Colher</button>
+  <button class="mobile-btn" id="btn-shop-fruits" aria-label="Abrir loja de frutas">Loja Frutas</button>
+  <button class="mobile-btn" id="btn-shop-seeds" aria-label="Abrir loja de sementes">Loja Sementes</button>
+</div>
+
+<!-- Background OST -->
+<audio id="game-ost" src="https://cdn.pixabay.com/download/audio/2022/06/22/audio_4bcb45ec7e.mp3?filename=happy-ukulele-110986.mp3" loop preload="auto"></audio>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+
+  const canvas = document.getElementById('garden-canvas');
+  const ctx = canvas.getContext('2d');
+  const coinCountEl = document.getElementById('coin-count');
+  const plantBtn = document.getElementById('plant-btn');
+  const harvestBtn = document.getElementById('harvest-btn');
+  const inventoryList = document.getElementById('inventory-list');
+  const shopModalFruits = document.getElementById('shop-modal-fruits');
+  const shopListFruits = document.getElementById('shop-list-fruits');
+  const shopCloseBtnFruits = document.getElementById('shop-close-btn-fruits');
+  const shopModalSeeds = document.getElementById('shop-modal-seeds');
+  const shopListSeeds = document.getElementById('shop-list-seeds');
+  const shopCloseBtnSeeds = document.getElementById('shop-close-btn-seeds');
+  const startButton = document.getElementById('start-button');
+  const startScreen = document.getElementById('start-screen');
+  const loginScreen = document.getElementById('login-screen');
+  const loginButton = document.getElementById('login-button');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const genderSelect = document.getElementById('gender');
+  const gameContainer = document.getElementById('game-container');
+  const mobileControls = document.getElementById('mobile-controls');
+  const characterImgMale = new Image();
+  characterImgMale.src = 'https://i.pinimg.com/originals/d7/18/dc/d718dcbe1181bc4a702e3743c4366ea6.png';
+  const characterImgFemale = new Image();
+  characterImgFemale.src = 'https://i.pinimg.com/originals/8d/e3/05/8de305bae18de10fbede76282d1cf3c4.png';
+  const sellerImgFruits = new Image();
+  sellerImgFruits.src = 'https://pbs.twimg.com/media/EXV9DNhVcAEJz1l.png';
+  const sellerImgSeeds = new Image();
+  sellerImgSeeds.src = 'https://i.pinimg.com/originals/82/7f/ba/827fba5fcec845b8990afcde7d9d0926.png';
+  const gameOst = document.getElementById('game-ost');
+
+  const petImg = new Image();
+  petImg.src = 'https://static.wikia.nocookie.net/growagarden/images/8/89/Catpet.png/revision/latest?cb=20250503200101';
+
+  const TILE_SIZE = 64;
+  const GRID_COLS = 12;
+  const GRID_ROWS = 8;
+  const sellerPosFruits = { x: GRID_COLS - 2, y: Math.floor(GRID_ROWS / 2) };
+  const sellerPosSeeds = { x: 1, y: Math.floor(GRID_ROWS / 2) };
+
+  const rarityTimes = {
+    'Comum': 10000,
+    'Raro': 30000,
+    'Épica': 60000,
+    'Lendária': 90000,
+    'Mitico': 120000
+  };
+
+  const SEEDS = [
+    {name: 'Cenoura', cost: 10, rarity: 'Comum', sellPrice: 30, color: '#ff7f50', icon: '🥕', desc: 'Cenoura: cresce rápido e vende por 30 moedas. Rica em vitaminas A e K.'},
+    {name: 'Morango', cost: 25, rarity: 'Comum', sellPrice: 60, color: '#d02e2e', icon: '🍓', desc: 'Morango: semente intermediária, mais lucrativa. Excelente fonte de antioxidantes.'},
+    {name: 'Laranja', cost: 30, rarity: 'Comum', sellPrice: 65, color: '#ffa500', icon: '🍊', desc: 'Laranja: cítrica e refrescante, cura vitamina C.'},
+    {name: 'Pera', cost: 35, rarity: 'Comum', sellPrice: 75, color: '#d1e231', icon: '🍐', desc: 'Pera: fruta doce, cresce relativamente rápido.'},
+    {name: 'Girassol', cost: 40, rarity: 'Raro', sellPrice: 95, color: '#f1c40f', icon: '🌻', desc: 'Girassol: demora crescer, mas vale bastante. Sementes usadas para óleo e alimentos.'},
+    {name: 'Abacaxi', cost: 55, rarity: 'Raro', sellPrice: 170, color: '#fbe870', icon: '🍍', desc: 'Abacaxi: tropical e saboroso, requer paciência.'},
+    {name: 'Kiwi', cost: 60, rarity: 'Raro', sellPrice: 175, color: '#7ec850', icon: '🥝', desc: 'Kiwi: fruta exótica, sabor refrescante.'},
+    {name: 'Maçã', cost: 70, rarity: 'Raro', sellPrice: 190, color: '#e74c3c', icon: '🍎', desc: 'Maçã: semente rara e valiosa, símbolo de saúde e longevidade.'},
+    {name: 'Banana', cost: 85, rarity: 'Épica', sellPrice: 230, color: '#ffe135', icon: '🍌', desc: 'Banana: rica em potássio, crescimento lento, preço alto.'},
+    {name: 'Uva', cost: 90, rarity: 'Épica', sellPrice: 240, color: '#6f2da8', icon: '🍇', desc: 'Uva: fruta doce, usada também para vinhos.'},
+    {name: 'Manga', cost: 95, rarity: 'Épica', sellPrice: 250, color: '#ffb347', icon: '🥭', desc: 'Manga: fruta doce e suculenta, muito apreciada.'},
+    {name: 'Amora', cost: 100, rarity: 'Épica', sellPrice: 255, color: '#2e0854', icon: '🍓', desc: 'Amora: pequena e saborosa, poupa espaço.'},
+    {name: 'Melancia', cost: 120, rarity: 'Lendária', sellPrice: 290, color: '#4cd137', icon: '🍉', desc: 'Melancia: grande e refrescante, custa caro.'},
+    {name: 'Cereja', cost: 130, rarity: 'Lendária', sellPrice: 310, color: '#b11226', icon: '🍒', desc: 'Cereja: fruta pequena, delicada e muito valiosa.'},
+    {name: 'Maracujá', cost: 140, rarity: 'Lendária', sellPrice: 320, color: '#ffcb05', icon: '🍈', desc: 'Maracujá: azedo e refrescante, raro e saboroso.'},
+    {name: 'Framboesa', cost: 145, rarity: 'Lendária', sellPrice: 330, color: '#e30b5d', icon: '🍇', desc: 'Framboesa: pequena fruta vermelha, muito valiosa.'},
+    {name: 'Pitaya', cost: 165, rarity: 'Mitico', sellPrice: 360, color: '#ff3399', icon: '🐉', desc: 'Pitaya: fruta exótica, aparência única, muito valiosa.'},
+    {name: 'Kiwi dourado', cost: 175, rarity: 'Mitico', sellPrice: 380, color: '#ffd700', icon: '🥝', desc: 'Kiwi dourado: variante rara do kiwi comum, preço elevado.'}
+  ];
+
+  const PET_COST = 2000;
+  const PET_ICON = '🐾';
+
+  let gameState = {
+    coins: 100,
+    garden: Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null)),
+    playerPos: {x:0, y:Math.floor(GRID_ROWS/2)},
+    inventory: {},
+    shopOpenFruits: false,
+    shopOpenSeeds: false,
+    petOwned: false,
+    playerSkinImg: null
+  };
+  
+  let petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+
+  function drawGrid(){
+    for(let r=0; r<GRID_ROWS; r++){
+      for(let c=0; c<GRID_COLS; c++){
+        ctx.fillStyle = ((r+c)%2===0)? '#8abf56' : '#7bb144';
+        ctx.fillRect(c*TILE_SIZE, r*TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+        const plant = gameState.garden[r][c];
+        if(plant){
+          const seed = SEEDS[plant.seedIdx];
+          const elapsed = Date.now() - plant.plantedAt;
+          let growTimeMs = rarityTimes[seed.rarity] || 60000;
+          if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
+          const progress = Math.min(elapsed/growTimeMs,1);
+          const radius = progress * (TILE_SIZE / 2 - 8);
+          ctx.beginPath();
+          if(plant.isGolden){
+            const gradient = ctx.createRadialGradient(
+              c*TILE_SIZE + TILE_SIZE/2,
+              r*TILE_SIZE + TILE_SIZE/2,
+              8,
+              c*TILE_SIZE + TILE_SIZE/2,
+              r*TILE_SIZE + TILE_SIZE/2,
+              radius > 8 ? radius : 8
+            );
+            gradient.addColorStop(0, '#fffacd');
+            gradient.addColorStop(1, seed.color);
+            ctx.fillStyle = gradient;
+          } else {
+            ctx.fillStyle = seed.color;
+          }
+          ctx.globalAlpha = 0.5;
+          ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, radius > 8 ? radius : 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.font = '36px serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(seed.icon, c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2);
+          if(progress >= 1){
+            ctx.strokeStyle = plant.isGolden ? '#ffd700' : '#2ecc40';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, TILE_SIZE/2 - 6, 0, Math.PI * 2);
+            ctx.stroke();
+            plant.isMature = true;
+          } else {
+            plant.isMature = false;
+          }
+        }
+      }
+    }
+    drawSeller(sellerPosFruits, sellerImgFruits);
+    drawSeller(sellerPosSeeds, sellerImgSeeds);
+  }
+
+  function drawSeller(pos, img){
+    const px = pos.x * TILE_SIZE;
+    const py = pos.y * TILE_SIZE;
+    const scale = 0.25;
+    const imgW = img.width * scale;
+    const imgH = img.height * scale;
+    const drawX = px + TILE_SIZE/2 - imgW/2;
+    const drawY = py + TILE_SIZE - imgH * 0.9;
+    if(img.complete){
+      ctx.drawImage(img, drawX, drawY, imgW, imgH);
+    } else {
+      img.onload = () => draw();
+    }
+  }
+
+  function drawPlayer(){
+    const px = gameState.playerPos.x * TILE_SIZE;
+    const py = gameState.playerPos.y * TILE_SIZE;
+    const scale = 0.2;
+    const imgW = gameState.playerSkinImg.width * scale;
+    const imgH = gameState.playerSkinImg.height * scale;
+    const drawX = px + TILE_SIZE/2 - imgW/2;
+    const drawY = py + TILE_SIZE - imgH * 0.9;
+    ctx.drawImage(gameState.playerSkinImg, drawX, drawY, imgW, imgH);
+  }
+
+  function drawPet(){
+    if(!gameState.petOwned) return;
+    const px = petPos.x * TILE_SIZE;
+    const py = petPos.y * TILE_SIZE;
+    const scale = 0.2;
+    const imgW = petImg.width * scale;
+    const imgH = petImg.height * scale;
+    const drawX = px + TILE_SIZE/2 - imgW/2;
+    const drawY = py + TILE_SIZE - imgH * 0.9;
+    if(petImg.complete){
+      ctx.drawImage(petImg, drawX, drawY, imgW, imgH);
+    }
+  }
+  
+  function movePetRandomly(){
+    if(!gameState.petOwned) return;
+    const directions = [
+      { dx: 0, dy: -1 },
+      { dx: 0, dy: 1 },
+      { dx: -1, dy: 0 },
+      { dx: 1, dy: 0 }
+    ];
+    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    const newX = petPos.x + randomDirection.dx;
+    const newY = petPos.y + randomDirection.dy;
+    if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS){
+      if(!((newX === gameState.playerPos.x && newY === gameState.playerPos.y) ||
+           (newX === sellerPosFruits.x && newY === sellerPosFruits.y) ||
+           (newX === sellerPosSeeds.x && newY === sellerPosSeeds.y))) {
+        petPos.x = newX;
+        petPos.y = newY;
+      }
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    drawPlayer();
+    drawPet();
+  }
+
+  function updateUI(){
+    coinCountEl.textContent = 'Moedas: ' + gameState.coins;
+    updateInventoryUI();
+  }
+
+  function updateInventoryUI(){
+    inventoryList.innerHTML = '';
+    const seedKeys = Object.keys(gameState.inventory).filter(k => k !== 'fruits');
+    const fruitKeys = (gameState.inventory.fruits) ? Object.keys(gameState.inventory.fruits) : [];
+
+    if(seedKeys.length === 0 && fruitKeys.length === 0 && !gameState.petOwned){
+      const empty = document.createElement('div');
+      empty.textContent = 'Inventário vazio';
+      empty.style.color = '#555';
+      inventoryList.appendChild(empty);
+      return;
+    }
+
+    if(seedKeys.length > 0){
+      const seedsHeader = document.createElement('div');
+      seedsHeader.textContent = 'Sementes:';
+      seedsHeader.style.fontWeight = '700';
+      inventoryList.appendChild(seedsHeader);
+
+      for(const idx of seedKeys){
+        const count = gameState.inventory[idx];
+        if(count > 0){
+          const seedIdx = Number(idx);
+          const item = document.createElement('div');
+          item.className = 'inventory-item';
+          const seed = SEEDS[seedIdx];
+          item.textContent = `${seed.icon} Semente de ${seed.name} x${count}`;
+          inventoryList.appendChild(item);
+        }
+      }
+    }
+
+    if(fruitKeys.length > 0){
+      const fruitsHeader = document.createElement('div');
+      fruitsHeader.textContent = 'Frutas para vender:';
+      fruitsHeader.style.fontWeight = '700';
+      fruitsHeader.style.marginTop = '12px';
+      inventoryList.appendChild(fruitsHeader);
+
+      for(const idx of fruitKeys){
+        const count = gameState.inventory.fruits[idx];
+        if(count > 0){
+          const seedIdx = Number(idx);
+          const item = document.createElement('div');
+          item.className = 'inventory-item';
+          const seed = SEEDS[seedIdx];
+          item.textContent = `${seed.icon} ${seed.name} maduro x${count}`;
+          inventoryList.appendChild(item);
+        }
+      }
+    }
+
+    if(gameState.petOwned){
+      const petItem = document.createElement('div');
+      petItem.className = 'inventory-item';
+      petItem.textContent = '🐾 Amigo Pet (reduz 5s de espera)';
+      inventoryList.appendChild(petItem);
+    }
+  }
+
+  function movePlayer(dx, dy){
+    const nx = gameState.playerPos.x + dx;
+    const ny = gameState.playerPos.y + dy;
+    if(nx >= 0 && nx < GRID_COLS && ny >= 0 && ny < GRID_ROWS){
+      gameState.playerPos.x = nx;
+      gameState.playerPos.y = ny;
+      draw();
+    }
+  }
+
+  function plantSeedFromInventory(){
+    const {x, y} = gameState.playerPos;
+    if(gameState.garden[y][x]){
+      alert('Já existe uma planta aqui!');
+      return;
+    }
+    const seedsInInventory = Object.entries(gameState.inventory).filter(([k,v]) => v > 0);
+    if(seedsInInventory.length === 0){
+      alert('Você não tem sementes no inventário. Compre com o vendedor de sementes (Q).');
+      return;
+    }
+    const [seedIdxStr, count] = seedsInInventory[0];
+    const seedIdx = Number(seedIdxStr);
+    gameState.inventory[seedIdx]--;
+    if(gameState.inventory[seedIdx] <= 0) delete gameState.inventory[seedIdx];
+    const isGolden = Math.random() < 0.03;
+    gameState.garden[y][x] = {
+      seedIdx,
+      plantedAt: Date.now(),
+      isMature: false,
+      isGolden
+    };
+    alert(`Você plantou a semente de ${SEEDS[seedIdx].name}${isGolden ? ' (Planta de Ouro!)' : ''}.`);
+    updateUI();
+    draw();
+  }
+
+  function harvestPlants(){
+    const pos = gameState.playerPos;
+    const plant = gameState.garden[pos.y][pos.x];
+    if(!plant){
+      alert('Não há planta para colher aqui!');
+      return;
+    }
+    const seed = SEEDS[plant.seedIdx];
+    let growTimeMs = rarityTimes[seed.rarity] || 60000;
+    if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
+    const elapsed = Date.now() - plant.plantedAt;
+
+    if(elapsed < growTimeMs || !plant.isMature){
+      alert('Planta ainda não está madura!');
+      return;
+    }
+    if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
+    if(!gameState.inventory.fruits[plant.seedIdx]) gameState.inventory.fruits[plant.seedIdx] = 0;
+    gameState.inventory.fruits[plant.seedIdx]++;
+    gameState.garden[pos.y][pos.x] = null;
+    alert(`Você colheu 1x ${seed.name}${plant.isGolden ? ' (Ouro)' : ''} para vender!`);
+    updateUI();
+    draw();
+  }
+
+  function buildShopListFruits(){
+    shopListFruits.innerHTML = '';
+    if(!gameState.inventory.fruits || Object.keys(gameState.inventory.fruits).length === 0){
+      const li = document.createElement('li');
+      li.textContent = 'Nenhuma fruta madura no inventário para vender.';
+      li.style.fontWeight = 'normal';
+      li.style.color = '#555';
+      shopListFruits.appendChild(li);
+      return;
+    }
+    const fruitEntries = Object.entries(gameState.inventory.fruits);
+    const sortedEntries = fruitEntries.sort((a,b)=>{
+      const seedA = SEEDS[Number(a[0])];
+      const seedB = SEEDS[Number(b[0])];
+      return seedA.sellPrice - seedB.sellPrice;
+    });
+    sortedEntries.forEach(([seedIdxStr, count])=>{
+      const seedIdx = Number(seedIdxStr);
+      const seed = SEEDS[seedIdx];
+      const sellPrice = seed.sellPrice * count;
+      const li = document.createElement('li');
+      li.textContent = `${seed.icon} ${seed.name} x${count} = ${sellPrice} moedas`;
+      li.tabIndex = 0;
+      li.setAttribute('role', 'button');
+      li.setAttribute('aria-label', `Vender ${count} ${seed.name}, receber ${sellPrice} moedas`);
+      li.onclick = () => { sellFruit(seedIdx, count); };
+      li.onkeypress = (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          sellFruit(seedIdx, count);
+          e.preventDefault();
+        }
+      };
+      shopListFruits.appendChild(li);
+    });
+    if(gameState.petOwned){
+      const li = document.createElement('li');
+      li.textContent = `${PET_ICON} Amigo Pet = 2000 moedas`;
+      li.tabIndex = 0;
+      li.setAttribute('role', 'button');
+      li.setAttribute('aria-label', `Vender Amigo Pet por 2000 moedas`);
+      li.onclick = () => {
+        if(confirm('Deseja vender seu Amigo Pet por 2000 moedas? Isso removerá o bônus de tempo.')){
+          gameState.coins += 2000;
+          gameState.petOwned = false;
+          alert('Pet vendido! O bônus de tempo foi removido.');
+          updateUI();
+          closeShopFruits();
+          draw();
+        }
+      };
+      li.onkeypress = (e) => {
+        if((e.key === 'Enter' || e.key === ' ') && gameState.petOwned){
+          e.preventDefault();
+          li.onclick();
+        }
+      };
+      shopListFruits.appendChild(li);
+    }
+  }
+
+  function sellFruit(seedIdx, count){
+    if(!gameState.inventory.fruits || gameState.inventory.fruits[seedIdx] < count) return;
+    gameState.inventory.fruits[seedIdx] -= count;
+    if(gameState.inventory.fruits[seedIdx] <= 0){
+      delete gameState.inventory.fruits[seedIdx];
+    }
+    const gained = SEEDS[seedIdx].sellPrice * count;
+    gameState.coins += gained;
+    alert(`Você vendeu ${count} ${SEEDS[seedIdx].name}(s) por ${gained} moedas!`);
+    updateUI();
+    closeShopFruits();
+    draw();
+  }
+
+  function openShopFruits(){
+    if(!isNear(gameState.playerPos,sellerPosFruits)){
+      alert('Aproxime-se do vendedor de frutas para abrir a loja.');
+      return;
+    }
+    buildShopListFruits();
+    shopModalFruits.style.display = 'flex';
+    gameState.shopOpenFruits = true;
+    shopModalFruits.setAttribute('aria-hidden', 'false');
+    shopModalFruits.focus();
+  }
+
+  function closeShopFruits(){
+    shopModalFruits.style.display = 'none';
+    gameState.shopOpenFruits = false;
+    shopModalFruits.setAttribute('aria-hidden', 'true');
+  }
+
+  function openShopSeeds(){
+    if(!isNear(gameState.playerPos,sellerPosSeeds)){
+      alert('Aproxime-se do vendedor de sementes para abrir a loja.');
+      return;
+    }
+    buildShopListSeeds();
+    shopModalSeeds.style.display = 'flex';
+    gameState.shopOpenSeeds = true;
+    shopModalSeeds.setAttribute('aria-hidden', 'false');
+    shopModalSeeds.focus();
+  }
+
+  function closeShopSeeds(){
+    shopModalSeeds.style.display = 'none';
+    gameState.shopOpenSeeds = false;
+    shopModalSeeds.setAttribute('aria-hidden', 'true');
+  }
+
+  const sortSeedsByCost = (a,b) => a.cost - b.cost;
+
+  function buildShopListSeeds(){
+    shopListSeeds.innerHTML = '';
+    const sortedSeeds = SEEDS.slice().sort(sortSeedsByCost);
+    sortedSeeds.forEach((seed, idx) => {
+      const li = document.createElement('li');
+      const nameEl = document.createElement('div');
+      nameEl.className = 'seed-name';
+      nameEl.textContent = `${seed.icon} ${seed.name} [${seed.rarity}]`;
+      const bioEl = document.createElement('div');
+      bioEl.className = 'seed-bio';
+      bioEl.textContent = seed.desc;
+      const buyBtn = document.createElement('button');
+      buyBtn.id = 'seed-buy-btn';
+      buyBtn.textContent = `Comprar (Custa ${seed.cost} moedas)`;
+      buyBtn.disabled = gameState.coins < seed.cost;
+      buyBtn.onclick = () => buySeed(SEEDS.indexOf(seed));
+      li.appendChild(nameEl);
+      li.appendChild(bioEl);
+      li.appendChild(buyBtn);
+      shopListSeeds.appendChild(li);
+    });
+
+    const petLi = document.createElement('li');
+    const petNameEl = document.createElement('div');
+    petNameEl.className = 'seed-name';
+    petNameEl.textContent = `${PET_ICON} Amigo Pet [Especial]`;
+    const petBioEl = document.createElement('div');
+    petBioEl.className = 'seed-bio';
+    petBioEl.textContent = 'Pet amigo que custa 2000 moedas, reduz 5 segundos do tempo de espera das frutas. Apenas um disponível por vez.';
+    const petBuyBtn = document.createElement('button');
+    petBuyBtn.id = 'pet-buy-btn';
+    petBuyBtn.textContent = `Comprar (Custa ${PET_COST} moedas)`;
+    petBuyBtn.disabled = gameState.coins < PET_COST || gameState.petOwned;
+    petBuyBtn.onclick = () => buyPet();
+    petLi.appendChild(petNameEl);
+    petLi.appendChild(petBioEl);
+    petLi.appendChild(petBuyBtn);
+    shopListSeeds.appendChild(petLi);
+  }
+
+  function buySeed(seedIdx){
+    const seed = SEEDS[seedIdx];
+    if(gameState.coins < seed.cost){
+      alert('Moedas insuficientes para comprar essa semente.');
+      return;
+    }
+    gameState.coins -= seed.cost;
+    if(!gameState.inventory[seedIdx]) gameState.inventory[seedIdx] = 0;
+    gameState.inventory[seedIdx]++;
+    alert(`Você comprou uma semente de ${seed.name} e está no inventário para plantar.`);
+    updateUI();
+    closeShopSeeds();
+  }
+
+  function buyPet(){
+    if(gameState.coins < PET_COST){
+      alert('Moedas insuficientes para comprar o Pet.');
+      return;
+    }
+    if(gameState.petOwned){
+      alert('Você já possui o Pet amigo.');
+      return;
+    }
+    gameState.coins -= PET_COST;
+    gameState.petOwned = true;
+    alert('Você comprou o Amigo Pet! Seu tempo de crescimento das frutas foi reduzido em 5 segundos.');
+    updateUI();
+    closeShopSeeds();
+  }
+
+  // Save / Load system
+  function saveGame() {
+    try {
+      const gameData = {
+        coins: gameState.coins,
+        garden: gameState.garden,
+        inventory: gameState.inventory,
+        petOwned: gameState.petOwned,
+        playerSkin: gameState.playerSkinImg ? gameState.playerSkinImg.src : null,
+        playerPos: gameState.playerPos
+      };
+      localStorage.setItem('growAGardenSave', JSON.stringify(gameData));
+      alert('Jogo salvo com sucesso!');
+    } catch (e) {
+      console.error('Erro ao salvar jogo:', e);
+      alert('Erro ao salvar jogo.');
+    }
+  }
+
+  function loadGame() {
+    try {
+      const saved = localStorage.getItem('growAGardenSave');
+      if(!saved) return false;
+      const data = JSON.parse(saved);
+      if(!data) return false;
+
+      gameState.coins = data.coins ?? 100;
+      gameState.garden = data.garden ?? Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+      gameState.inventory = data.inventory ?? {};
+      if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
+      gameState.petOwned = data.petOwned ?? false;
+      gameState.playerPos = data.playerPos ?? {x:0, y:Math.floor(GRID_ROWS/2)};
+
+      petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+
+      if(data.playerSkin === characterImgMale.src) gameState.playerSkinImg = characterImgMale;
+      else if(data.playerSkin === characterImgFemale.src) gameState.playerSkinImg = characterImgFemale;
+      else gameState.playerSkinImg = characterImgMale;
+
+      alert('Jogo carregado com sucesso!');
+      updateUI();
+      draw();
+      return true;
+    } catch (e) {
+      console.error('Erro ao carregar jogo:', e);
+      alert('Erro ao carregar jogo.');
+      return false;
+    }
+  }
+
+  function addSaveLoadButtons(){
+    const infoPanel = document.getElementById('info-panel');
+
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.gap = '12px';
+    container.style.justifyContent = 'center';
+    container.style.marginTop = '10px';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Salvar Jogo';
+    saveBtn.className = 'btn';
+    saveBtn.style.flex = '1';
+    saveBtn.onclick = saveGame;
+
+    const loadBtn = document.createElement('button');
+    loadBtn.textContent = 'Carregar Jogo';
+    loadBtn.className = 'btn';
+    loadBtn.style.flex = '1';
+    loadBtn.onclick = () => {
+      if(loadGame()){
+        draw();
+      }
+    };
+
+    container.appendChild(saveBtn);
+    container.appendChild(loadBtn);
+    infoPanel.appendChild(container);
+  }
+
+  // Mobile Detection and Controls Implementation
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent) 
+      || ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 1);
+  }
+
+  function setupMobileControls(){
+    if(!isMobileDevice()) return;
+
+    mobileControls.style.display = 'flex';
+
+    document.getElementById('btn-up').addEventListener('touchstart', e=>{
+      movePlayer(0, -1);
+      e.preventDefault();
+    });
+    document.getElementById('btn-down').addEventListener('touchstart', e=>{
+      movePlayer(0, 1);
+      e.preventDefault();
+    });
+    document.getElementById('btn-left').addEventListener('touchstart', e=>{
+      movePlayer(-1, 0);
+      e.preventDefault();
+    });
+    document.getElementById('btn-right').addEventListener('touchstart', e=>{
+      movePlayer(1, 0);
+      e.preventDefault();
+    });
+    document.getElementById('btn-plant').addEventListener('click', e=>{
+      plantSeedFromInventory();
+      e.preventDefault();
+    });
+    document.getElementById('btn-harvest').addEventListener('click', e=>{
+      harvestPlants();
+      e.preventDefault();
+    });
+    document.getElementById('btn-shop-fruits').addEventListener('click', e=>{
+      openShopFruits();
+      e.preventDefault();
+    });
+    document.getElementById('btn-shop-seeds').addEventListener('click', e=>{
+      openShopSeeds();
+      e.preventDefault();
+    });
+  }
+
+  plantBtn.addEventListener('click', () => {
+    plantSeedFromInventory();
+  });
+  harvestBtn.addEventListener('click', () => {
+    harvestPlants();
+  });
+
+  shopCloseBtnFruits.addEventListener('click', closeShopFruits);
+  shopCloseBtnSeeds.addEventListener('click', closeShopSeeds);
+
+  window.addEventListener('keydown', e => {
+    if(gameState.shopOpenFruits){
+      if(e.key === 'Escape'){
+        closeShopFruits();
+        e.preventDefault();
+      }
+      return;
+    }
+    if(gameState.shopOpenSeeds){
+      if(e.key === 'Escape'){
+        closeShopSeeds();
+        e.preventDefault();
+      }
+      return;
+    }
+    switch(e.key){
+      case 'ArrowUp':
+      case 'w':
+      case 'W':
+        movePlayer(0, -1);
+        e.preventDefault();
+        break;
+      case 'ArrowDown':
+      case 's':
+      case 'S':
+        movePlayer(0, 1);
+        e.preventDefault();
+        break;
+      case 'ArrowLeft':
+      case 'a':
+      case 'A':
+        movePlayer(-1, 0);
+        e.preventDefault();
+        break;
+      case 'ArrowRight':
+      case 'd':
+      case 'D':
+        movePlayer(1, 0);
+        e.preventDefault();
+        break;
+      case 'e':
+      case 'E':
+        openShopFruits();
+        e.preventDefault();
+        break;
+      case 'q':
+      case 'Q':
+        openShopSeeds();
+        e.preventDefault();
+        break;
+      case 'h':
+      case 'H':
+        harvestPlants();
+        e.preventDefault();
+        break;
+    }
+  });
+
+  // Start button opens login screen
+  startButton.addEventListener('click', () => {
+    startScreen.style.display = 'none';
+    loginScreen.style.display = 'flex';
+  });
+
+  // Login button enters game
+  loginButton.addEventListener('click', () => {
+    const name = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+    const gender = genderSelect.value;
+    if(!name || !password){
+      alert('Por favor, preencha nome e senha.');
+      return;
+    }
+    startScreen.style.display = 'none';
+    loginScreen.style.display = 'none';
+    gameContainer.style.display = 'flex';
+    gameContainer.setAttribute('aria-hidden', 'false');
+    if(gender === 'masculino'){
+      gameState.playerSkinImg = characterImgMale;
+    } else {
+      gameState.playerSkinImg = characterImgFemale;
+    }
+    updateUI();
+    draw();
+    addSaveLoadButtons();
+    setupMobileControls();
+    petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+    setInterval(() => {
+      movePetRandomly();
+      draw();
+    }, 2000);
+    const playPromise = gameOst.play();
+    if(playPromise !== undefined){
+      playPromise.catch(() => {});
+    }
+  });
+
+  // Shop helper functions
+  function isNear(pos1, pos2){
+    const dx = Math.abs(pos1.x - pos2.x);
+    const dy = Math.abs(pos1.y - pos2.y);
+    return (dx <= 1 && dy <= 1);
+  }
+
+  function openShopFruits(){
+    if(!isNear(gameState.playerPos,sellerPosFruits)){
+      alert('Aproxime-se do vendedor de frutas para abrir a loja.');
+      return;
+    }
+    buildShopListFruits();
+    shopModalFruits.style.display = 'flex';
+    gameState.shopOpenFruits = true;
+    shopModalFruits.setAttribute('aria-hidden', 'false');
+    shopModalFruits.focus();
+  }
+  function closeShopFruits(){
+    shopModalFruits.style.display = 'none';
+    gameState.shopOpenFruits = false;
+    shopModalFruits.setAttribute('aria-hidden', 'true');
+  }
+  function openShopSeeds(){
+    if(!isNear(gameState.playerPos,sellerPosSeeds)){
+      alert('Aproxime-se do vendedor de sementes para abrir a loja.');
+      return;
+    }
+    buildShopListSeeds();
+    shopModalSeeds.style.display = 'flex';
+    gameState.shopOpenSeeds = true;
+    shopModalSeeds.setAttribute('aria-hidden', 'false');
+    shopModalSeeds.focus();
+  }
+  function closeShopSeeds(){
+    shopModalSeeds.style.display = 'none';
+    gameState.shopOpenSeeds = false;
+    shopModalSeeds.setAttribute('aria-hidden', 'true');
+  }
+
+  draw();
+});
+</script>
+</body>
+</html>
+
