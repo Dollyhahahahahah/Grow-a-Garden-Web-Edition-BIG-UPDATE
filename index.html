@@ -209,75 +209,266 @@
   .inventory-item:hover {
     background: #0097a7;
   }
-  /* Lojinha modal (vendedor frutas) */
+  
+  /* NOVO ESTILO PARA LOJA DE FRUTAS */
   #shop-modal-fruits {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: rgba(255 255 255 / 0.98);
     border-radius: 24px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.25);
-    width: 320px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    width: 500px;
     max-width: 90vw;
     padding: 24px;
     z-index: 100;
     display: none;
     flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    max-height: 80vh;
   }
+  
   #shop-modal-fruits h3 {
     margin-top: 0;
     margin-bottom: 1.5rem;
     text-align: center;
     color: #007c91;
-    font-size: 1.6rem;
+    font-size: 2rem;
     font-weight: 700;
+    border-bottom: 3px solid #00bcd4;
+    padding-bottom: 8px;
   }
+  
   #shop-list-fruits {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 360px;
-    overflow-y: auto;
-    border-radius: 16px;
-  }
-  #shop-list-fruits li {
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  
+  .fruit-item {
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 16px;
-    background: #b2ebf2;
-    margin-bottom: 14px;
-    cursor: pointer;
-    font-weight: 700;
-    color: #007c91;
-    user-select: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-size: 1rem;
-  }
-  #shop-list-fruits li:hover,
-  #shop-list-fruits li:focus {
-    background: #00bcd4;
     color: white;
-    outline: none;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
   }
-  #shop-close-btn-fruits {
-    background: #e74c3c;
-    padding: 12px;
+  
+  .fruit-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 151, 167, 0.4);
+  }
+  
+  .fruit-icon {
+    font-size: 2rem;
+    margin-right: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .fruit-details {
+    flex: 1;
+  }
+  
+  .fruit-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  
+  .fruit-rarity {
+    font-size: 0.85rem;
+    opacity: 0.9;
+  }
+  
+  .fruit-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 12px;
+    min-width: 100px;
+    text-align: center;
+  }
+  
+  .rarity-common {
+    color: #4ade80;
+  }
+  
+  .rarity-rare {
+    color: #60a5fa;
+  }
+  
+  .rarity-epic {
+    color: #a78bfa;
+  }
+  
+  .rarity-legendary {
+    color: #f59e0b;
+  }
+  
+  .rarity-mythic {
+    color: #f43f5e;
+  }
+
+  /* Lojinha de sementes */
+  #shop-modal-seeds {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255 255 255 / 0.98);
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    width: 500px;
+    max-width: 90vw;
+    padding: 24px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    max-height: 80vh;
+  }
+  
+  #shop-modal-seeds h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #007c91;
+    font-size: 2rem;
+    font-weight: 700;
+    border-bottom: 3px solid #00bcd4;
+    padding-bottom: 8px;
+  }
+  
+  #shop-list-seeds {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  
+  .seed-item {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #0c4a6e;
+    box-shadow: 0 4px 12px rgba(0, 151, 167, 0.1);
+    border: 1px solid #bae6fd;
+  }
+  
+  .seed-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .seed-icon {
+    font-size: 1.8rem;
+  }
+  
+  .seed-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    flex: 1;
+  }
+  
+  .seed-rarity {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  
+  .rarity-common-bg {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  .rarity-rare-bg {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+  
+  .rarity-epic-bg {
+    background-color: #ede9fe;
+    color: #5b21b6;
+  }
+  
+  .rarity-legendary-bg {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .rarity-mythic-bg {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  .seed-desc {
+    font-size: 0.95rem;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+  
+  .seed-buy-btn {
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .seed-buy-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 151, 167, 0.3);
+  }
+  
+  .seed-buy-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Botão fechar loja frutas */
+  #shop-close-btn-fruits, #shop-close-btn-seeds {
+    background: #e74c3c;
+    padding: 16px;
+    border-radius: 18px;
     color: white;
     font-weight: 700;
     border: none;
     cursor: pointer;
     align-self: center;
-    margin-top: 12px;
-    transition: background-color 0.3s ease;
-    width: 160px;
-    font-size: 1rem;
-    box-shadow: 0 6px 18px rgba(231,76,60,0.7);
+    margin-top: 16px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    width: 180px;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 24px rgba(231,76,60,0.85);
   }
-  #shop-close-btn-fruits:hover {
+  #shop-close-btn-fruits:hover, #shop-close-btn-seeds:hover {
     background: #c0392b;
-    box-shadow: 0 8px 24px rgba(192,57,43,0.7);
+    box-shadow: 0 12px 36px rgba(192,57,43,0.85);
   }
 
   /* Info vendedores simplificado */
@@ -371,6 +562,18 @@
       max-width: 90vw;
       margin: 10px auto;
     }
+    #shop-modal-fruits, #shop-modal-seeds {
+      width: 90vw;
+      max-width: 100vw;
+      top: 10px;
+      right: 5vw;
+      padding: 18px 20px;
+    }
+    #shop-close-btn-fruits, #shop-close-btn-seeds {
+      width: 100%;
+      font-size: 1.1rem;
+      margin-top: 12px;
+    }
   }
 </style>
 </head>
@@ -396,7 +599,7 @@
   <canvas id="garden-canvas" width="768" height="512" aria-label="Área do Jardim 2D"></canvas>
   <div id="info-panel" aria-live="polite" aria-atomic="true">
     <h2>Informações</h2>
-    <div id="coin-count" aria-live="polite" aria-atomic="true">Moedas: 100</div>
+    <div id="coin-count" aria-live="polite" aria-atomic="true">Moedas: 5000</div>
     <button id="plant-btn" class="btn" aria-label="Plantar semente">Plantar semente na posição do personagem</button>
     <button id="harvest-btn" class="btn" aria-label="Colher planta madura na posição do personagem">Colher planta madura na posição do personagem</button>
     <div id="inventory" aria-label="Inventário do jogador" tabindex="0">
@@ -417,8 +620,8 @@
   </div>
 
   <div id="seller-info-pet" aria-label="Amigo Pet">
-    <img src="https://static.wikia.nocookie.net/growagarden/images/8/89/Catpet.png/revision/latest?cb=20250503200101" alt="Sprite do pet, gato pequeno estilo desenho animado, colorido e simpático" />
-    <span>Pet amigo: reduz 5 segundos do tempo de espera das frutas, custa 2000 moedas</span>
+    <img src="https://static.wikia.nocookie.net/growagarden/images/f/f3/GoldenLabPet.png/revision/latest/scale-to-width-down/250?cb=20250515232516" alt="Sprite do pet, cachorro dourado estilo desenho animado, colorido e simpático" />
+    <span>Pet amigo: reduz 5 segundos do tempo de espera das frutas, custa 50000 moedas</span>
   </div>
   
   <div id="shop-modal-fruits" role="dialog" aria-modal="true" aria-labelledby="shop-title-fruits" tabindex="-1">
@@ -427,7 +630,7 @@
     <button id="shop-close-btn-fruits" aria-label="Fechar lojinha">Fechar</button>
   </div>
 
-  <div id="shop-modal-seeds" role="dialog" aria-modal="true" aria-labelledby="shop-title-seeds" tabindex="-1" style="width: 360px;">
+  <div id="shop-modal-seeds" role="dialog" aria-modal="true" aria-labelledby="shop-title-seeds" tabindex="-1">
     <h3 id="shop-title-seeds">Lojinha do Vendedor (Sementes)</h3>
     <ul id="shop-list-seeds" tabindex="0" aria-label="Sementes para comprar"></ul>
     <button id="shop-close-btn-seeds" aria-label="Fechar lojinha">Fechar</button>
@@ -485,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameOst = document.getElementById('game-ost');
 
   const petImg = new Image();
-  petImg.src = 'https://static.wikia.nocookie.net/growagarden/images/8/89/Catpet.png/revision/latest?cb=20250503200101';
+  petImg.src = 'https://tiermaker.com/images/media/template_images/2024/16807765/grow-a-garden-pet-16807765/cat.png';
 
   const TILE_SIZE = 64;
   const GRID_COLS = 12;
@@ -501,32 +704,40 @@ document.addEventListener('DOMContentLoaded', () => {
     'Mitico': 120000
   };
 
+  // PREÇOS BALANCEADOS (COMPRA/VENDA)
   const SEEDS = [
-    {name: 'Cenoura', cost: 10, rarity: 'Comum', sellPrice: 30, color: '#ff7f50', icon: '🥕', desc: 'Cenoura: cresce rápido e vende por 30 moedas. Rica em vitaminas A e K.'},
-    {name: 'Morango', cost: 25, rarity: 'Comum', sellPrice: 60, color: '#d02e2e', icon: '🍓', desc: 'Morango: semente intermediária, mais lucrativa. Excelente fonte de antioxidantes.'},
-    {name: 'Laranja', cost: 30, rarity: 'Comum', sellPrice: 65, color: '#ffa500', icon: '🍊', desc: 'Laranja: cítrica e refrescante, cura vitamina C.'},
-    {name: 'Pera', cost: 35, rarity: 'Comum', sellPrice: 75, color: '#d1e231', icon: '🍐', desc: 'Pera: fruta doce, cresce relativamente rápido.'},
-    {name: 'Girassol', cost: 40, rarity: 'Raro', sellPrice: 95, color: '#f1c40f', icon: '🌻', desc: 'Girassol: demora crescer, mas vale bastante. Sementes usadas para óleo e alimentos.'},
-    {name: 'Abacaxi', cost: 55, rarity: 'Raro', sellPrice: 170, color: '#fbe870', icon: '🍍', desc: 'Abacaxi: tropical e saboroso, requer paciência.'},
-    {name: 'Kiwi', cost: 60, rarity: 'Raro', sellPrice: 175, color: '#7ec850', icon: '🥝', desc: 'Kiwi: fruta exótica, sabor refrescante.'},
-    {name: 'Maçã', cost: 70, rarity: 'Raro', sellPrice: 190, color: '#e74c3c', icon: '🍎', desc: 'Maçã: semente rara e valiosa, símbolo de saúde e longevidade.'},
-    {name: 'Banana', cost: 85, rarity: 'Épica', sellPrice: 230, color: '#ffe135', icon: '🍌', desc: 'Banana: rica em potássio, crescimento lento, preço alto.'},
-    {name: 'Uva', cost: 90, rarity: 'Épica', sellPrice: 240, color: '#6f2da8', icon: '🍇', desc: 'Uva: fruta doce, usada também para vinhos.'},
-    {name: 'Manga', cost: 95, rarity: 'Épica', sellPrice: 250, color: '#ffb347', icon: '🥭', desc: 'Manga: fruta doce e suculenta, muito apreciada.'},
-    {name: 'Amora', cost: 100, rarity: 'Épica', sellPrice: 255, color: '#2e0854', icon: '🍓', desc: 'Amora: pequena e saborosa, poupa espaço.'},
-    {name: 'Melancia', cost: 120, rarity: 'Lendária', sellPrice: 290, color: '#4cd137', icon: '🍉', desc: 'Melancia: grande e refrescante, custa caro.'},
-    {name: 'Cereja', cost: 130, rarity: 'Lendária', sellPrice: 310, color: '#b11226', icon: '🍒', desc: 'Cereja: fruta pequena, delicada e muito valiosa.'},
-    {name: 'Maracujá', cost: 140, rarity: 'Lendária', sellPrice: 320, color: '#ffcb05', icon: '🍈', desc: 'Maracujá: azedo e refrescante, raro e saboroso.'},
-    {name: 'Framboesa', cost: 145, rarity: 'Lendária', sellPrice: 330, color: '#e30b5d', icon: '🍇', desc: 'Framboesa: pequena fruta vermelha, muito valiosa.'},
-    {name: 'Pitaya', cost: 165, rarity: 'Mitico', sellPrice: 360, color: '#ff3399', icon: '🐉', desc: 'Pitaya: fruta exótica, aparência única, muito valiosa.'},
-    {name: 'Kiwi dourado', cost: 175, rarity: 'Mitico', sellPrice: 380, color: '#ffd700', icon: '🥝', desc: 'Kiwi dourado: variante rara do kiwi comum, preço elevado.'}
+    // Comum - ROI ~2x
+    {name: 'Cenoura', cost: 200, rarity: 'Comum', sellPrice: 400, color: '#ff7f50', icon: '🥕', desc: 'Básica para iniciantes'},
+    {name: 'Morango', cost: 350, rarity: 'Comum', sellPrice: 700, color: '#d02e2e', icon: '🍓', desc: 'Rendimento decente'},
+    {name: 'Laranja', cost: 500, rarity: 'Comum', sellPrice: 1000, color: '#ffa500', icon: '🍊', desc: 'Clássica cítrica'},
+    
+    // Raro - ROI ~2.5x
+    {name: 'Girassol', cost: 800, rarity: 'Raro', sellPrice: 2000, color: '#f1c40f', icon: '🌻', desc: 'Demora mas vale a pena'},
+    {name: 'Abacaxi', cost: 1200, rarity: 'Raro', sellPrice: 3000, color: '#fbe870', icon: '🍍', desc: 'Investimento tropical'},
+    {name: 'Maçã', cost: 1500, rarity: 'Raro', sellPrice: 3750, color: '#e74c3c', icon: '🍎', desc: 'Colheita premium'},
+    
+    // Épica - ROI ~3x
+    {name: 'Banana', cost: 2000, rarity: 'Épica', sellPrice: 6000, color: '#ffe135', icon: '🍌', desc: 'Para fazendeiros experientes'},
+    {name: 'Uva', cost: 3000, rarity: 'Épica', sellPrice: 9000, color: '#6f2da8', icon: '🍇', desc: 'Vinhedo de alto padrão'},
+    {name: 'Manga', cost: 4000, rarity: 'Épica', sellPrice: 12000, color: '#ffb347', icon: '🥭', desc: 'Sabor caro'},
+    
+    // Lendária - ROI ~3.5x
+    {name: 'Melancia', cost: 6000, rarity: 'Lendária', sellPrice: 21000, color: '#4cd137', icon: '🍉', desc: 'Investimento pesado'},
+    {name: 'Cereja', cost: 8000, rarity: 'Lendária', sellPrice: 28000, color: '#b11226', icon: '🍒', desc: 'Luxo frutal'},
+    {name: 'Maracujá', cost: 10000, rarity: 'Lendária', sellPrice: 35000, color: '#ffcb05', icon: '🍈', desc: 'Para milionários'},
+    
+    // Mítico - ROI ~4x
+    {name: 'Pitaya', cost: 15000, rarity: 'Mitico', sellPrice: 60000, color: '#ff3399', icon: '🐉', desc: 'Cultivo de elite'},
+    {name: 'Durian', cost: 25000, rarity: 'Mitico', sellPrice: 100000, color: '#a2d729', icon: '🌰', desc: 'Só para magnatas'},
+    {name: 'Kiwi dourado', cost: 30000, rarity: 'Mitico', sellPrice: 120000, color: '#ffd700', icon: '🥝', desc: 'Investimento bilionário'}
   ];
 
-  const PET_COST = 2000;
+  const PET_COST = 50000; 
   const PET_ICON = '🐾';
 
+  // Dinheiro inicial ajustado para 5000
   let gameState = {
-    coins: 100,
+    coins: 5000,
     garden: Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null)),
     playerPos: {x:0, y:Math.floor(GRID_ROWS/2)},
     inventory: {},
@@ -721,7 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(gameState.petOwned){
       const petItem = document.createElement('div');
       petItem.className = 'inventory-item';
-      petItem.textContent = '🐾 Amigo Pet (reduz 5s de espera)';
+      petItem.textContent = `${PET_ICON} Amigo Pet (reduz 5s de espera)`;
       inventoryList.appendChild(petItem);
     }
   }
@@ -742,7 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Já existe uma planta aqui!');
       return;
     }
-    const seedsInInventory = Object.entries(gameState.inventory).filter(([k,v]) => v > 0);
+    const seedsInInventory = Object.entries(gameState.inventory).filter(([k,v]) => v > 0 && k !== 'fruits');
     if(seedsInInventory.length === 0){
       alert('Você não tem sementes no inventário. Compre com o vendedor de sementes (Q).');
       return;
@@ -790,61 +1001,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buildShopListFruits(){
     shopListFruits.innerHTML = '';
-    if(!gameState.inventory.fruits || Object.keys(gameState.inventory.fruits).length === 0){
-      const li = document.createElement('li');
-      li.textContent = 'Nenhuma fruta madura no inventário para vender.';
-      li.style.fontWeight = 'normal';
-      li.style.color = '#555';
-      shopListFruits.appendChild(li);
+    
+    if(!gameState.inventory.fruits || Object.keys(gameState.inventory.fruits).length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'fruit-item';
+      emptyMsg.innerHTML = `
+        <div style="text-align: center; width: 100%;">
+          Nenhuma fruta madura no inventário
+        </div>
+      `;
+      shopListFruits.appendChild(emptyMsg);
       return;
     }
-    const fruitEntries = Object.entries(gameState.inventory.fruits);
-    const sortedEntries = fruitEntries.sort((a,b)=>{
-      const seedA = SEEDS[Number(a[0])];
-      const seedB = SEEDS[Number(b[0])];
-      return seedA.sellPrice - seedB.sellPrice;
+
+    // Criar array de frutas ordenadas por preço
+    const fruitsForSale = Object.entries(gameState.inventory.fruits)
+      .map(([seedIdx, count]) => {
+        const seed = SEEDS[Number(seedIdx)];
+        return {
+          seedIdx: Number(seedIdx),
+          count,
+          totalPrice: seed.sellPrice * count,
+          seed
+        };
+      })
+      .sort((a, b) => a.totalPrice - b.totalPrice); // Ordenar do mais barato ao mais caro
+
+    // Adicionar cada fruta à lista
+    fruitsForSale.forEach(({seedIdx, count, totalPrice, seed}) => {
+      const fruitEl = document.createElement('div');
+      fruitEl.className = 'fruit-item';
+      fruitEl.innerHTML = `
+        <div style="display: flex; align-items: center;">
+          <span class="fruit-icon">${seed.icon}</span>
+          <div class="fruit-details">
+            <div class="fruit-name">${seed.name} ×${count}</div>
+            <div class="fruit-rarity rarity-${seed.rarity.toLowerCase()}">${seed.rarity}</div>
+          </div>
+        </div>
+        <div class="fruit-price">${totalPrice} <small>moedas</small></div>
+      `;
+      
+      fruitEl.addEventListener('click', () => sellFruit(seedIdx, count));
+      shopListFruits.appendChild(fruitEl);
     });
-    sortedEntries.forEach(([seedIdxStr, count])=>{
-      const seedIdx = Number(seedIdxStr);
-      const seed = SEEDS[seedIdx];
-      const sellPrice = seed.sellPrice * count;
-      const li = document.createElement('li');
-      li.textContent = `${seed.icon} ${seed.name} x${count} = ${sellPrice} moedas`;
-      li.tabIndex = 0;
-      li.setAttribute('role', 'button');
-      li.setAttribute('aria-label', `Vender ${count} ${seed.name}, receber ${sellPrice} moedas`);
-      li.onclick = () => { sellFruit(seedIdx, count); };
-      li.onkeypress = (e) => {
-        if(e.key === 'Enter' || e.key === ' '){
-          sellFruit(seedIdx, count);
-          e.preventDefault();
-        }
-      };
-      shopListFruits.appendChild(li);
-    });
-    if(gameState.petOwned){
-      const li = document.createElement('li');
-      li.textContent = `${PET_ICON} Amigo Pet = 2000 moedas`;
-      li.tabIndex = 0;
-      li.setAttribute('role', 'button');
-      li.setAttribute('aria-label', `Vender Amigo Pet por 2000 moedas`);
-      li.onclick = () => {
-        if(confirm('Deseja vender seu Amigo Pet por 2000 moedas? Isso removerá o bônus de tempo.')){
+
+    // Adicionar opção do pet se possuir
+    if(gameState.petOwned) {
+      const petEl = document.createElement('div');
+      petEl.className = 'fruit-item';
+      petEl.style.background = 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)';
+      petEl.innerHTML = `
+        <div style="display: flex; align-items: center;">
+          <span class="fruit-icon">${PET_ICON}</span>
+          <div class="fruit-details">
+            <div class="fruit-name">Amigo Pet</div>
+            <div class="fruit-rarity">Especial</div>
+          </div>
+        </div>
+        <div class="fruit-price">2000 <small>moedas</small></div>
+      `;
+      
+      petEl.addEventListener('click', () => {
+        if(confirm('Vender seu Amigo Pet por 2000 moedas?')) {
           gameState.coins += 2000;
           gameState.petOwned = false;
-          alert('Pet vendido! O bônus de tempo foi removido.');
           updateUI();
           closeShopFruits();
           draw();
         }
-      };
-      li.onkeypress = (e) => {
-        if((e.key === 'Enter' || e.key === ' ') && gameState.petOwned){
-          e.preventDefault();
-          li.onclick();
-        }
-      };
-      shopListFruits.appendChild(li);
+      });
+      
+      shopListFruits.appendChild(petEl);
     }
   }
 
@@ -880,6 +1108,116 @@ document.addEventListener('DOMContentLoaded', () => {
     shopModalFruits.setAttribute('aria-hidden', 'true');
   }
 
+  function buildShopListSeeds(){
+    shopListSeeds.innerHTML = '';
+    
+    // Agrupar sementes por raridade
+    const seedsByRarity = {
+      'Comum': [],
+      'Raro': [],
+      'Épica': [],
+      'Lendária': [],
+      'Mitico': []
+    };
+    
+    SEEDS.forEach(seed => {
+      seedsByRarity[seed.rarity].push(seed);
+    });
+    
+    // Adicionar cada grupo de raridade
+    Object.entries(seedsByRarity).forEach(([rarity, seeds]) => {
+      if(seeds.length === 0) return;
+      
+      // Adicionar cabeçalho da raridade
+      const rarityHeader = document.createElement('h4');
+      rarityHeader.textContent = `${rarity} (${seeds.length})`;
+      rarityHeader.style.margin = '16px 0 8px 0';
+      rarityHeader.style.color = getRarityColor(rarity);
+      shopListSeeds.appendChild(rarityHeader);
+      
+      // Adicionar cada semente do grupo
+      seeds.forEach(seed => {
+        const seedEl = document.createElement('div');
+        seedEl.className = 'seed-item';
+        
+        const seedHeader = document.createElement('div');
+        seedHeader.className = 'seed-header';
+        seedHeader.innerHTML = `
+          <span class="seed-icon">${seed.icon}</span>
+          <span class="seed-name">${seed.name}</span>
+          <span class="seed-rarity rarity-${rarity.toLowerCase()}-bg">${rarity}</span>
+        `;
+        
+        const seedDesc = document.createElement('div');
+        seedDesc.className = 'seed-desc';
+        seedDesc.textContent = seed.desc;
+        
+        const buyBtn = document.createElement('button');
+        buyBtn.className = 'seed-buy-btn';
+        buyBtn.disabled = gameState.coins < seed.cost;
+        buyBtn.innerHTML = `
+          <span>Comprar</span>
+          <span>${seed.cost} moedas</span>
+        `;
+        buyBtn.onclick = () => buySeed(SEEDS.indexOf(seed));
+        
+        seedEl.appendChild(seedHeader);
+        seedEl.appendChild(seedDesc);
+        seedEl.appendChild(buyBtn);
+        
+        shopListSeeds.appendChild(seedEl);
+      });
+    });
+    
+    // Adicionar seção do pet
+    const petHeader = document.createElement('h4');
+    petHeader.textContent = 'Especial (1)';
+    petHeader.style.margin = '16px 0 8px 0';
+    petHeader.style.color = '#f59e0b';
+    shopListSeeds.appendChild(petHeader);
+    
+    const petEl = document.createElement('div');
+    petEl.className = 'seed-item';
+    
+    const petHeaderDiv = document.createElement('div');
+    petHeaderDiv.className = 'seed-header';
+    petHeaderDiv.innerHTML = `
+      <span class="seed-icon">${PET_ICON}</span>
+      <span class="seed-name">Amigo Pet</span>
+      <span class="seed-rarity rarity-legendary-bg">Especial</span>
+    `;
+    
+    const petDesc = document.createElement('div');
+    petDesc.className = 'seed-desc';
+    petDesc.textContent = 'Pet amigo que custa 50000 moedas, reduz 5 segundos do tempo de espera das frutas. Apenas um disponível por vez.';
+    
+    const petBuyBtn = document.createElement('button');
+    petBuyBtn.className = 'seed-buy-btn';
+    petBuyBtn.disabled = gameState.coins < PET_COST || gameState.petOwned;
+    petBuyBtn.innerHTML = `
+      <span>Comprar</span>
+      <span>${PET_COST} moedas</span>
+    `;
+    petBuyBtn.onclick = buyPet;
+    
+    petEl.appendChild(petHeaderDiv);
+    petEl.appendChild(petDesc);
+    petEl.appendChild(petBuyBtn);
+    
+    shopListSeeds.appendChild(petEl);
+  }
+  
+  function getRarityColor(rarity) {
+    switch(rarity) {
+      case 'Comum': return '#166534';
+      case 'Raro': return '#1e40af';
+      case 'Épica': return '#5b21b6';
+      case 'Lendária': return '#92400e';
+      case 'Mitico': return '#991b1b';
+      default: return '#475569';
+    }
+  }
+
   function openShopSeeds(){
     if(!isNear(gameState.playerPos,sellerPosSeeds)){
       alert('Aproxime-se do vendedor de sementes para abrir a loja.');
@@ -896,48 +1234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     shopModalSeeds.style.display = 'none';
     gameState.shopOpenSeeds = false;
     shopModalSeeds.setAttribute('aria-hidden', 'true');
-  }
-
-  const sortSeedsByCost = (a,b) => a.cost - b.cost;
-
-  function buildShopListSeeds(){
-    shopListSeeds.innerHTML = '';
-    const sortedSeeds = SEEDS.slice().sort(sortSeedsByCost);
-    sortedSeeds.forEach((seed, idx) => {
-      const li = document.createElement('li');
-      const nameEl = document.createElement('div');
-      nameEl.className = 'seed-name';
-      nameEl.textContent = `${seed.icon} ${seed.name} [${seed.rarity}]`;
-      const bioEl = document.createElement('div');
-      bioEl.className = 'seed-bio';
-      bioEl.textContent = seed.desc;
-      const buyBtn = document.createElement('button');
-      buyBtn.id = 'seed-buy-btn';
-      buyBtn.textContent = `Comprar (Custa ${seed.cost} moedas)`;
-      buyBtn.disabled = gameState.coins < seed.cost;
-      buyBtn.onclick = () => buySeed(SEEDS.indexOf(seed));
-      li.appendChild(nameEl);
-      li.appendChild(bioEl);
-      li.appendChild(buyBtn);
-      shopListSeeds.appendChild(li);
-    });
-
-    const petLi = document.createElement('li');
-    const petNameEl = document.createElement('div');
-    petNameEl.className = 'seed-name';
-    petNameEl.textContent = `${PET_ICON} Amigo Pet [Especial]`;
-    const petBioEl = document.createElement('div');
-    petBioEl.className = 'seed-bio';
-    petBioEl.textContent = 'Pet amigo que custa 2000 moedas, reduz 5 segundos do tempo de espera das frutas. Apenas um disponível por vez.';
-    const petBuyBtn = document.createElement('button');
-    petBuyBtn.id = 'pet-buy-btn';
-    petBuyBtn.textContent = `Comprar (Custa ${PET_COST} moedas)`;
-    petBuyBtn.disabled = gameState.coins < PET_COST || gameState.petOwned;
-    petBuyBtn.onclick = () => buyPet();
-    petLi.appendChild(petNameEl);
-    petLi.appendChild(petBioEl);
-    petLi.appendChild(petBuyBtn);
-    shopListSeeds.appendChild(petLi);
   }
 
   function buySeed(seedIdx){
@@ -996,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = JSON.parse(saved);
       if(!data) return false;
 
-      gameState.coins = data.coins ?? 100;
+      gameState.coins = data.coins ?? 5000;
       gameState.garden = data.garden ?? Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
       gameState.inventory = data.inventory ?? {};
       if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
@@ -1208,43 +1504,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy = Math.abs(pos1.y - pos2.y);
     return (dx <= 1 && dy <= 1);
   }
-
-  function openShopFruits(){
-    if(!isNear(gameState.playerPos,sellerPosFruits)){
-      alert('Aproxime-se do vendedor de frutas para abrir a loja.');
-      return;
-    }
-    buildShopListFruits();
-    shopModalFruits.style.display = 'flex';
-    gameState.shopOpenFruits = true;
-    shopModalFruits.setAttribute('aria-hidden', 'false');
-    shopModalFruits.focus();
-  }
-  function closeShopFruits(){
-    shopModalFruits.style.display = 'none';
-    gameState.shopOpenFruits = false;
-    shopModalFruits.setAttribute('aria-hidden', 'true');
-  }
-  function openShopSeeds(){
-    if(!isNear(gameState.playerPos,sellerPosSeeds)){
-      alert('Aproxime-se do vendedor de sementes para abrir a loja.');
-      return;
-    }
-    buildShopListSeeds();
-    shopModalSeeds.style.display = 'flex';
-    gameState.shopOpenSeeds = true;
-    shopModalSeeds.setAttribute('aria-hidden', 'false');
-    shopModalSeeds.focus();
-  }
-  function closeShopSeeds(){
-    shopModalSeeds.style.display = 'none';
-    gameState.shopOpenSeeds = false;
-    shopModalSeeds.setAttribute('aria-hidden', 'true');
-  }
-
-  draw();
 });
 </script>
 </body>
 </html>
-
