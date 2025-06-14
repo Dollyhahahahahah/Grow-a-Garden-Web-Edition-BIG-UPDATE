@@ -7,3 +7,4 @@ UPDATE LOG -
 SPECIAL EVENT FRUIT
 STOCK SYSTEM
 RESET STOCK SYSTEM
+(mobile controls under maintence)
