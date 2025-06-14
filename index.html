@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>grown a garden Web edition</title>
-<link rel="icon" type="image/png" href="https://noping.com/_next/image?url=https%3A%2F%2Fblogadmin.noping.com%2Fwp-content%2Fuploads%2F2025%2F05%2Fgrowagarden-1747688567733.jpg&amp;w=1920&amp;q=75" />
+<title>Grow a Garden</title>
 <style>
   /* Reset e base */
   *, *::before, *::after {
@@ -103,7 +102,7 @@
     background: rgba(255 255 255 / 0.95);
     border-radius: 24px;
     box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-    width: 1200px;
+    width: 1400px;
     max-width: 95vw;
     padding: 24px;
     display: none; /* inicialmente escondido */
@@ -118,9 +117,9 @@
     border-radius: 16px;
     display: block;
     box-shadow: inset 0 8px 16px #4b772c;
-    flex: 1 1 768px;
-    max-width: 768px;
-    height: 512px;
+    flex: 1 1 1024px;
+    max-width: 1024px;
+    height: 640px;
   }
   #info-panel {
     max-width: 320px;
@@ -210,7 +209,7 @@
     background: #0097a7;
   }
   
-  /* NOVO ESTILO PARA LOJA DE FRUTAS */
+  /* Estilo para loja de frutas */
   #shop-modal-fruits {
     position: fixed;
     top: 50%;
@@ -340,13 +339,33 @@
   
   #shop-modal-seeds h3 {
     margin-top: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     text-align: center;
     color: #007c91;
     font-size: 2rem;
     font-weight: 700;
     border-bottom: 3px solid #00bcd4;
     padding-bottom: 8px;
+  }
+  
+  #shop-reset-timer {
+    background: rgba(0, 188, 212, 0.1);
+    padding: 8px;
+    border-radius: 12px;
+    margin: 0 auto 16px auto;
+    width: 80%;
+    text-align: center;
+    font-weight: 600;
+    color: #007c91;
+  }
+  
+  #reset-time {
+    font-weight: 800;
+    color: #e74c3c;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin-left: 4px;
   }
   
   #shop-list-seeds {
@@ -450,7 +469,7 @@
     box-shadow: none;
   }
 
-  /* Botão fechar loja frutas */
+  /* Botão fechar loja */
   #shop-close-btn-fruits, #shop-close-btn-seeds {
     background: #e74c3c;
     padding: 16px;
@@ -499,48 +518,36 @@
     color: #007c91;
   }
 
-  /* Mobile controls */
-  #mobile-controls {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none;
-    z-index: 99;
-    user-select: none;
-    max-width: 600px;
-    width: 90vw;
-    background: rgba(255 255 255 / 0.9);
-    border-radius: 24px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    padding: 10px 20px;
+  /* Variant indicators */
+  .variant-indicator {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 12px;
-  }
-
-  .mobile-btn {
-    background: #00bcd4;
-    border: none;
+    font-weight: bold;
     color: white;
-    font-weight: 700;
-    padding: 14px 20px;
-    border-radius: 16px;
-    cursor: pointer;
-    font-size: 1rem;
-    box-shadow: 0 6px 15px rgba(0,188,212,0.5);
-    user-select: none;
-    min-width: 60px;
-    text-align: center;
-    transition: background-color 0.3s ease;
   }
-  .mobile-btn:active {
-    background: #0097a7;
+  
+  .golden-variant {
+    background: #ffd700;
+  }
+  
+  .silver-variant {
+    background: #c0c0c0;
+  }
+  
+  .crystal-variant {
+    background: #00bcd4;
   }
 
   /* Responsive adjustments */
-  @media (max-width: 960px) {
+  @media (max-width: 1200px) {
     #game-container {
       flex-direction: column;
       align-items: center;
@@ -551,7 +558,7 @@
     #garden-canvas {
       max-width: 90vw;
       width: 90vw;
-      height: calc(90vw * 2 / 3);
+      height: calc(90vw * 5 / 8);
     }
     #info-panel {
       max-width: 90vw;
@@ -596,17 +603,15 @@
 </div>
 
 <div id="game-container" role="main" aria-label="Área do jogo" aria-hidden="true">
-  <canvas id="garden-canvas" width="768" height="512" aria-label="Área do Jardim 2D"></canvas>
+  <canvas id="garden-canvas" width="1024" height="640" aria-label="Área do Jardim 2D"></canvas>
   <div id="info-panel" aria-live="polite" aria-atomic="true">
     <h2>Informações</h2>
     <div id="coin-count" aria-live="polite" aria-atomic="true">Moedas: 5000</div>
-    <button id="plant-btn" class="btn" aria-label="Plantar semente">Plantar semente na posição do personagem</button>
-    <button id="harvest-btn" class="btn" aria-label="Colher planta madura na posição do personagem">Colher planta madura na posição do personagem</button>
     <div id="inventory" aria-label="Inventário do jogador" tabindex="0">
       <h3>Inventário</h3>
       <div id="inventory-list" role="list"></div>
     </div>
-    <p><strong>Controles:</strong> Use as setas ou WASD para mover o personagem. Pressione <kbd>E</kbd> próximo ao vendedor de frutas para abrir a lojinha de vendas. Pressione <kbd>Q</kbd> próximo ao vendedor de sementes para abrir a loja de sementes e comprar. O crescimento das plantas é automático (aprox. 1 minuto por planta). Colha a planta quando estiver madura.</p>
+    <p><strong>Controles:</strong> Use as setas ou WASD para mover o personagem. Pressione <kbd>E</kbd> próximo ao vendedor de frutas para abrir a lojinha de vendas. Pressione <kbd>Q</kbd> próximo ao vendedor de sementes para abrir a loja de sementes e comprar. Pressione <kbd>5</kbd> para plantar e <kbd>6</kbd> para colher. O crescimento das plantas é automático (aprox. 1 minuto por planta). Colha a planta quando estiver madura.</p>
   </div>
 
   <div id="seller-info-fruits" aria-label="Vendedor de frutas">
@@ -632,6 +637,7 @@
 
   <div id="shop-modal-seeds" role="dialog" aria-modal="true" aria-labelledby="shop-title-seeds" tabindex="-1">
     <h3 id="shop-title-seeds">Lojinha do Vendedor (Sementes)</h3>
+    <div id="shop-reset-timer">Loja resetando em: <span id="reset-time">04:00</span></div>
     <ul id="shop-list-seeds" tabindex="0" aria-label="Sementes para comprar"></ul>
     <button id="shop-close-btn-seeds" aria-label="Fechar lojinha">Fechar</button>
   </div>
@@ -643,10 +649,10 @@
   <button class="mobile-btn" id="btn-left" aria-label="Mover para esquerda">←</button>
   <button class="mobile-btn" id="btn-down" aria-label="Mover para baixo">↓</button>
   <button class="mobile-btn" id="btn-right" aria-label="Mover para direita">→</button>
-  <button class="mobile-btn" id="btn-plant" aria-label="Plantar semente">Plantar</button>
-  <button class="mobile-btn" id="btn-harvest" aria-label="Colher planta">Colher</button>
-  <button class="mobile-btn" id="btn-shop-fruits" aria-label="Abrir loja de frutas">Loja Frutas</button>
-  <button class="mobile-btn" id="btn-shop-seeds" aria-label="Abrir loja de sementes">Loja Sementes</button>
+  <button class="mobile-btn" id="btn-plant" aria-label="Plantar semente">Plantar (5)</button>
+  <button class="mobile-btn" id="btn-harvest" aria-label="Colher planta">Colher (6)</button>
+  <button class="mobile-btn" id="btn-shop-fruits" aria-label="Abrir loja de frutas">Loja Frutas (E)</button>
+  <button class="mobile-btn" id="btn-shop-seeds" aria-label="Abrir loja de sementes">Loja Sementes (Q)</button>
 </div>
 
 <!-- Background OST -->
@@ -659,8 +665,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('garden-canvas');
   const ctx = canvas.getContext('2d');
   const coinCountEl = document.getElementById('coin-count');
-  const plantBtn = document.getElementById('plant-btn');
-  const harvestBtn = document.getElementById('harvest-btn');
   const inventoryList = document.getElementById('inventory-list');
   const shopModalFruits = document.getElementById('shop-modal-fruits');
   const shopListFruits = document.getElementById('shop-list-fruits');
@@ -677,6 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const genderSelect = document.getElementById('gender');
   const gameContainer = document.getElementById('game-container');
   const mobileControls = document.getElementById('mobile-controls');
+  
   const characterImgMale = new Image();
   characterImgMale.src = 'https://i.pinimg.com/originals/d7/18/dc/d718dcbe1181bc4a702e3743c4366ea6.png';
   const characterImgFemale = new Image();
@@ -690,11 +695,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const petImg = new Image();
   petImg.src = 'https://tiermaker.com/images/media/template_images/2024/16807765/grow-a-garden-pet-16807765/cat.png';
 
+  // Configurações do mapa aumentado
   const TILE_SIZE = 64;
-  const GRID_COLS = 12;
-  const GRID_ROWS = 8;
-  const sellerPosFruits = { x: GRID_COLS - 2, y: Math.floor(GRID_ROWS / 2) };
-  const sellerPosSeeds = { x: 1, y: Math.floor(GRID_ROWS / 2) };
+  const GRID_COLS = 16; // Aumentado de 12 para 16
+  const GRID_ROWS = 10; // Aumentado de 8 para 10
+  
+  // Posições dos vendedores nos cantos
+  const sellerPosFruits = { x: GRID_COLS - 2, y: 1 };
+  const sellerPosSeeds = { x: 1, y: GRID_ROWS - 2 };
+  
+  // Posição inicial do jogador
+  const playerInitialPos = { x: 2, y: 2 };
+
+  // Mapa de solo - marrom onde pode plantar
+  const soilMap = Array(GRID_ROWS).fill().map((_, row) => 
+    Array(GRID_COLS).fill().map((_, col) => {
+      // Áreas plantáveis são os quadrantes centrais
+      const inTopLeft = row >= 1 && row <= 4 && col >= 1 && col <= 6;
+      const inTopRight = row >= 1 && row <= 4 && col >= 9 && col <= 14;
+      const inBottomLeft = row >= 5 && row <= 8 && col >= 1 && col <= 6;
+      const inBottomRight = row >= 5 && row <= 8 && col >= 9 && col <= 14;
+      return inTopLeft || inTopRight || inBottomLeft || inBottomRight ? 1 : 0;
+    })
+  );
 
   const rarityTimes = {
     'Comum': 10000,
@@ -702,6 +725,14 @@ document.addEventListener('DOMContentLoaded', () => {
     'Épica': 60000,
     'Lendária': 90000,
     'Mitico': 120000
+  };
+
+  // Variantes de plantas
+  const PLANT_VARIANTS = {
+    NORMAL: { chance: 0.85, bonus: 1, color: null, symbol: '' },
+    GOLDEN: { chance: 0.03, bonus: 2, color: '#ffd700', symbol: '★' },
+    SILVER: { chance: 0.07, bonus: 1.5, color: '#c0c0c0', symbol: '✦' },
+    CRYSTAL: { chance: 0.05, bonus: 1.8, color: '#00bcd4', symbol: '❄' }
   };
 
   // PREÇOS BALANCEADOS (COMPRA/VENDA)
@@ -735,73 +766,164 @@ document.addEventListener('DOMContentLoaded', () => {
   const PET_COST = 50000; 
   const PET_ICON = '🐾';
 
+  // Sistema de estoque da loja
+  let shopStock = {};
+  let shopResetTimer = null;
+  let shopResetTime = 4 * 60; // 4 minutos em segundos
+  
+  function generateShopStock() {
+    shopStock = {};
+    SEEDS.forEach(seed => {
+      let chance;
+      switch(seed.rarity) {
+        case 'Comum': chance = 0.75; break;
+        case 'Raro': chance = 0.5; break;
+        case 'Épica': chance = 0.3; break;
+        case 'Lendária': chance = 0.05; break;
+        case 'Mitico': chance = 0.01; break;
+        default: chance = 0.5;
+      }
+      
+      if(Math.random() < chance) {
+        const quantity = Math.floor(Math.random() * 20) + 1; // 1-20
+        shopStock[SEEDS.indexOf(seed)] = quantity;
+      }
+    });
+    
+    // Resetar o timer
+    shopResetTime = 4 * 60;
+    updateShopTimer();
+    
+    // Resetar o timer se já existir
+    if(shopResetTimer) clearInterval(shopResetTimer);
+    shopResetTimer = setInterval(updateShopTimer, 1000);
+  }
+
+  function updateShopTimer() {
+    shopResetTime--;
+    if(shopResetTime <= 0) {
+      generateShopStock();
+      if(shopModalSeeds.style.display === 'flex') {
+        buildShopListSeeds();
+      }
+    } else {
+      const minutes = Math.floor(shopResetTime / 60);
+      const seconds = shopResetTime % 60;
+      const timerElement = document.getElementById('reset-time');
+      if(timerElement) {
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+  }
+
   // Dinheiro inicial ajustado para 5000
   let gameState = {
     coins: 5000,
     garden: Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null)),
-    playerPos: {x:0, y:Math.floor(GRID_ROWS/2)},
+    playerPos: {x:0, y:0},
     inventory: {},
     shopOpenFruits: false,
     shopOpenSeeds: false,
     petOwned: false,
-    playerSkinImg: null
+    playerSkinImg: null,
+    username: '',
+    playerId: Math.random().toString(36).substr(2, 9)
   };
   
   let petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
 
+  function getRandomVariant() {
+    const rand = Math.random();
+    let cumulative = 0;
+    for(const [key, variant] of Object.entries(PLANT_VARIANTS)) {
+      cumulative += variant.chance;
+      if(rand <= cumulative) {
+        return key;
+      }
+    }
+    return 'NORMAL';
+  }
+
   function drawGrid(){
     for(let r=0; r<GRID_ROWS; r++){
       for(let c=0; c<GRID_COLS; c++){
-        ctx.fillStyle = ((r+c)%2===0)? '#8abf56' : '#7bb144';
+        // Desenha o chão - marrom onde pode plantar, verde onde não pode
+        if(soilMap[r][c] === 1) {
+          ctx.fillStyle = ((r+c)%2===0)? '#a67c52' : '#8c5e36'; // Tons de marrom
+        } else {
+          ctx.fillStyle = ((r+c)%2===0)? '#8abf56' : '#7bb144'; // Tons de verde
+        }
         ctx.fillRect(c*TILE_SIZE, r*TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
+        // Desenha plantas do jogador principal
         const plant = gameState.garden[r][c];
         if(plant){
-          const seed = SEEDS[plant.seedIdx];
-          const elapsed = Date.now() - plant.plantedAt;
-          let growTimeMs = rarityTimes[seed.rarity] || 60000;
-          if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
-          const progress = Math.min(elapsed/growTimeMs,1);
-          const radius = progress * (TILE_SIZE / 2 - 8);
-          ctx.beginPath();
-          if(plant.isGolden){
-            const gradient = ctx.createRadialGradient(
-              c*TILE_SIZE + TILE_SIZE/2,
-              r*TILE_SIZE + TILE_SIZE/2,
-              8,
-              c*TILE_SIZE + TILE_SIZE/2,
-              r*TILE_SIZE + TILE_SIZE/2,
-              radius > 8 ? radius : 8
-            );
-            gradient.addColorStop(0, '#fffacd');
-            gradient.addColorStop(1, seed.color);
-            ctx.fillStyle = gradient;
-          } else {
-            ctx.fillStyle = seed.color;
-          }
-          ctx.globalAlpha = 0.5;
-          ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, radius > 8 ? radius : 8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.globalAlpha = 1;
-          ctx.font = '36px serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(seed.icon, c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2);
-          if(progress >= 1){
-            ctx.strokeStyle = plant.isGolden ? '#ffd700' : '#2ecc40';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, TILE_SIZE/2 - 6, 0, Math.PI * 2);
-            ctx.stroke();
-            plant.isMature = true;
-          } else {
-            plant.isMature = false;
-          }
+          drawPlant(r, c, plant);
         }
       }
     }
     drawSeller(sellerPosFruits, sellerImgFruits);
     drawSeller(sellerPosSeeds, sellerImgSeeds);
+  }
+
+  function drawPlant(r, c, plant) {
+    const seed = SEEDS[plant.seedIdx];
+    const elapsed = Date.now() - plant.plantedAt;
+    let growTimeMs = rarityTimes[seed.rarity] || 60000;
+    if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
+    const progress = Math.min(elapsed/growTimeMs,1);
+    const radius = progress * (TILE_SIZE / 2 - 8);
+    
+    // Cor baseada na variante
+    let plantColor = seed.color;
+    if(plant.variant === 'GOLDEN') plantColor = '#ffd700';
+    else if(plant.variant === 'SILVER') plantColor = '#c0c0c0';
+    else if(plant.variant === 'CRYSTAL') plantColor = '#00bcd4';
+    
+    ctx.beginPath();
+    if(plant.variant !== 'NORMAL') {
+      const gradient = ctx.createRadialGradient(
+        c*TILE_SIZE + TILE_SIZE/2,
+        r*TILE_SIZE + TILE_SIZE/2,
+        8,
+        c*TILE_SIZE + TILE_SIZE/2,
+        r*TILE_SIZE + TILE_SIZE/2,
+        radius > 8 ? radius : 8
+      );
+      gradient.addColorStop(0, '#fffacd');
+      gradient.addColorStop(1, plantColor);
+      ctx.fillStyle = gradient;
+    } else {
+      ctx.fillStyle = plantColor;
+    }
+    
+    ctx.globalAlpha = 0.5;
+    ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, radius > 8 ? radius : 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.font = '36px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(seed.icon, c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2);
+    
+    // Desenha indicador de variante se não for normal
+    if(plant.variant !== 'NORMAL') {
+      const variant = PLANT_VARIANTS[plant.variant];
+      ctx.fillStyle = variant.color;
+      ctx.font = '20px Arial';
+      ctx.fillText(variant.symbol, c*TILE_SIZE + TILE_SIZE/2 + 20, r*TILE_SIZE + TILE_SIZE/2 - 20);
+    }
+    
+    if(progress >= 1){
+      ctx.strokeStyle = plant.variant !== 'NORMAL' ? PLANT_VARIANTS[plant.variant].color : '#2ecc40';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, TILE_SIZE/2 - 6, 0, Math.PI * 2);
+      ctx.stroke();
+      plant.isMature = true;
+    } else {
+      plant.isMature = false;
+    }
   }
 
   function drawSeller(pos, img){
@@ -828,6 +950,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawX = px + TILE_SIZE/2 - imgW/2;
     const drawY = py + TILE_SIZE - imgH * 0.9;
     ctx.drawImage(gameState.playerSkinImg, drawX, drawY, imgW, imgH);
+    
+    // Desenha nome do jogador
+    ctx.font = 'bold 12px Arial';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.textAlign = 'center';
+    ctx.fillText(gameState.username, px + TILE_SIZE/2, py - 5);
   }
 
   function drawPet(){
@@ -949,6 +1077,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function plantSeedFromInventory(){
     const {x, y} = gameState.playerPos;
+    
+    // Verifica se está em área de solo marrom (onde pode plantar)
+    if(soilMap[y][x] !== 1) {
+      alert('Você só pode plantar na área marrom (terra fértil)!');
+      return;
+    }
+    
     if(gameState.garden[y][x]){
       alert('Já existe uma planta aqui!');
       return;
@@ -962,14 +1097,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedIdx = Number(seedIdxStr);
     gameState.inventory[seedIdx]--;
     if(gameState.inventory[seedIdx] <= 0) delete gameState.inventory[seedIdx];
-    const isGolden = Math.random() < 0.03;
+    
+    const variant = getRandomVariant();
     gameState.garden[y][x] = {
       seedIdx,
       plantedAt: Date.now(),
       isMature: false,
-      isGolden
+      variant
     };
-    alert(`Você plantou a semente de ${SEEDS[seedIdx].name}${isGolden ? ' (Planta de Ouro!)' : ''}.`);
+    
+    let variantMsg = '';
+    if(variant !== 'NORMAL') {
+      const variantInfo = PLANT_VARIANTS[variant];
+      variantMsg = ` (Variante ${variant.toLowerCase()} - ${variantInfo.symbol})`;
+    }
+    
+    alert(`Você plantou a semente de ${SEEDS[seedIdx].name}${variantMsg}.`);
     updateUI();
     draw();
   }
@@ -992,9 +1135,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
     if(!gameState.inventory.fruits[plant.seedIdx]) gameState.inventory.fruits[plant.seedIdx] = 0;
+    
+    // Calcula o preço com bônus da variante
+    const variantBonus = PLANT_VARIANTS[plant.variant].bonus;
+    const sellPrice = Math.round(seed.sellPrice * variantBonus);
+    
     gameState.inventory.fruits[plant.seedIdx]++;
     gameState.garden[pos.y][pos.x] = null;
-    alert(`Você colheu 1x ${seed.name}${plant.isGolden ? ' (Ouro)' : ''} para vender!`);
+    
+    let variantMsg = '';
+    if(plant.variant !== 'NORMAL') {
+      variantMsg = ` (Variante ${plant.variant.toLowerCase()} - valor ${variantBonus}x)`;
+    }
+    
+    alert(`Você colheu 1x ${seed.name}${variantMsg} para vender por ${sellPrice} moedas!`);
     updateUI();
     draw();
   }
@@ -1120,8 +1274,8 @@ document.addEventListener('DOMContentLoaded', () => {
       'Mitico': []
     };
     
-    SEEDS.forEach(seed => {
-      seedsByRarity[seed.rarity].push(seed);
+    SEEDS.forEach((seed, idx) => {
+      seedsByRarity[seed.rarity].push({...seed, stock: shopStock[idx] || 0});
     });
     
     // Adicionar cada grupo de raridade
@@ -1152,9 +1306,16 @@ document.addEventListener('DOMContentLoaded', () => {
         seedDesc.className = 'seed-desc';
         seedDesc.textContent = seed.desc;
         
+        const stockInfo = document.createElement('div');
+        stockInfo.style.fontSize = '0.85rem';
+        stockInfo.style.color = '#475569';
+        stockInfo.textContent = `Stock: ${seed.stock}`;
+        seedDesc.appendChild(document.createElement('br'));
+        seedDesc.appendChild(stockInfo);
+        
         const buyBtn = document.createElement('button');
         buyBtn.className = 'seed-buy-btn';
-        buyBtn.disabled = gameState.coins < seed.cost;
+        buyBtn.disabled = gameState.coins < seed.cost || seed.stock <= 0;
         buyBtn.innerHTML = `
           <span>Comprar</span>
           <span>${seed.cost} moedas</span>
@@ -1242,12 +1403,26 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Moedas insuficientes para comprar essa semente.');
       return;
     }
+    if(!shopStock[seedIdx] || shopStock[seedIdx] <= 0){
+      alert('Esta semente está esgotada no momento!');
+      return;
+    }
+    
     gameState.coins -= seed.cost;
-    if(!gameState.inventory[seedIdx]) gameState.inventory[seedIdx] = 0;
+    shopStock[seedIdx]--;
+    
+    if(!gameState.inventory[seedIdx]) {
+      gameState.inventory[seedIdx] = 0;
+    }
     gameState.inventory[seedIdx]++;
+    
     alert(`Você comprou uma semente de ${seed.name} e está no inventário para plantar.`);
     updateUI();
-    closeShopSeeds();
+    
+    // Atualiza a lista da loja se estiver aberta
+    if(shopModalSeeds.style.display === 'flex') {
+      buildShopListSeeds();
+    }
   }
 
   function buyPet(){
@@ -1275,7 +1450,8 @@ document.addEventListener('DOMContentLoaded', () => {
         inventory: gameState.inventory,
         petOwned: gameState.petOwned,
         playerSkin: gameState.playerSkinImg ? gameState.playerSkinImg.src : null,
-        playerPos: gameState.playerPos
+        playerPos: gameState.playerPos,
+        username: gameState.username
       };
       localStorage.setItem('growAGardenSave', JSON.stringify(gameData));
       alert('Jogo salvo com sucesso!');
@@ -1298,6 +1474,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
       gameState.petOwned = data.petOwned ?? false;
       gameState.playerPos = data.playerPos ?? {x:0, y:Math.floor(GRID_ROWS/2)};
+      gameState.username = data.username || 'Jogador';
 
       petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
 
@@ -1345,58 +1522,6 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(loadBtn);
     infoPanel.appendChild(container);
   }
-
-  // Mobile Detection and Controls Implementation
-  function isMobileDevice() {
-    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent) 
-      || ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 1);
-  }
-
-  function setupMobileControls(){
-    if(!isMobileDevice()) return;
-
-    mobileControls.style.display = 'flex';
-
-    document.getElementById('btn-up').addEventListener('touchstart', e=>{
-      movePlayer(0, -1);
-      e.preventDefault();
-    });
-    document.getElementById('btn-down').addEventListener('touchstart', e=>{
-      movePlayer(0, 1);
-      e.preventDefault();
-    });
-    document.getElementById('btn-left').addEventListener('touchstart', e=>{
-      movePlayer(-1, 0);
-      e.preventDefault();
-    });
-    document.getElementById('btn-right').addEventListener('touchstart', e=>{
-      movePlayer(1, 0);
-      e.preventDefault();
-    });
-    document.getElementById('btn-plant').addEventListener('click', e=>{
-      plantSeedFromInventory();
-      e.preventDefault();
-    });
-    document.getElementById('btn-harvest').addEventListener('click', e=>{
-      harvestPlants();
-      e.preventDefault();
-    });
-    document.getElementById('btn-shop-fruits').addEventListener('click', e=>{
-      openShopFruits();
-      e.preventDefault();
-    });
-    document.getElementById('btn-shop-seeds').addEventListener('click', e=>{
-      openShopSeeds();
-      e.preventDefault();
-    });
-  }
-
-  plantBtn.addEventListener('click', () => {
-    plantSeedFromInventory();
-  });
-  harvestBtn.addEventListener('click', () => {
-    harvestPlants();
-  });
 
   shopCloseBtnFruits.addEventListener('click', closeShopFruits);
   shopCloseBtnSeeds.addEventListener('click', closeShopSeeds);
@@ -1451,6 +1576,14 @@ document.addEventListener('DOMContentLoaded', () => {
         openShopSeeds();
         e.preventDefault();
         break;
+      case '5':
+        plantSeedFromInventory();
+        e.preventDefault();
+        break;
+      case '6':
+        harvestPlants();
+        e.preventDefault();
+        break;
       case 'h':
       case 'H':
         harvestPlants();
@@ -1478,11 +1611,19 @@ document.addEventListener('DOMContentLoaded', () => {
     loginScreen.style.display = 'none';
     gameContainer.style.display = 'flex';
     gameContainer.setAttribute('aria-hidden', 'false');
+    
+    gameState.username = name;
     if(gender === 'masculino'){
       gameState.playerSkinImg = characterImgMale;
     } else {
       gameState.playerSkinImg = characterImgFemale;
     }
+    
+    gameState.playerPos = playerInitialPos;
+    
+    // Gera estoque inicial da loja
+    generateShopStock();
+    
     updateUI();
     draw();
     addSaveLoadButtons();
@@ -1497,6 +1638,51 @@ document.addEventListener('DOMContentLoaded', () => {
       playPromise.catch(() => {});
     }
   });
+
+  // Mobile Detection and Controls Implementation
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent) 
+      || ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 1);
+  }
+
+  function setupMobileControls(){
+    if(!isMobileDevice()) return;
+
+    mobileControls.style.display = 'flex';
+
+    document.getElementById('btn-up').addEventListener('touchstart', e=>{
+      movePlayer(0, -1);
+      e.preventDefault();
+    });
+    document.getElementById('btn-down').addEventListener('touchstart', e=>{
+      movePlayer(0, 1);
+      e.preventDefault();
+    });
+    document.getElementById('btn-left').addEventListener('touchstart', e=>{
+      movePlayer(-1, 0);
+      e.preventDefault();
+    });
+    document.getElementById('btn-right').addEventListener('touchstart', e=>{
+      movePlayer(1, 0);
+      e.preventDefault();
+    });
+    document.getElementById('btn-plant').addEventListener('click', e=>{
+      plantSeedFromInventory();
+      e.preventDefault();
+    });
+    document.getElementById('btn-harvest').addEventListener('click', e=>{
+      harvestPlants();
+      e.preventDefault();
+    });
+    document.getElementById('btn-shop-fruits').addEventListener('click', e=>{
+      openShopFruits();
+      e.preventDefault();
+    });
+    document.getElementById('btn-shop-seeds').addEventListener('click', e=>{
+      openShopSeeds();
+      e.preventDefault();
+    });
+  }
 
   // Shop helper functions
   function isNear(pos1, pos2){
