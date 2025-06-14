@@ -611,6 +611,79 @@
     gap: 10px;
   }
 
+  /* Novo estilo para conquistas */
+  #achievements-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    height: 180px;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  #achievements-panel h3 {
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    color: #007c91;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  
+  .achievement-item {
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .achievement-icon {
+    font-size: 1.5rem;
+    min-width: 30px;
+    text-align: center;
+  }
+  
+  .achievement-info {
+    flex: 1;
+  }
+  
+  .achievement-name {
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  
+  .achievement-desc {
+    font-size: 0.8rem;
+    opacity: 0.9;
+  }
+  
+  .achievement-locked {
+    background: #cbd5e1;
+    color: #64748b;
+  }
+  
+  /* Indicador de nível do pet */
+  .pet-level {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border: 2px solid white;
+  }
+
   @media (max-width: 768px) {
     #mobile-controls {
       display: flex;
@@ -686,6 +759,13 @@
       <h3>Inventário</h3>
       <div id="inventory-list" role="list"></div>
     </div>
+    
+    <!-- Painel de conquistas adicionado -->
+    <div id="achievements-panel">
+      <h3>Conquistas</h3>
+      <div id="achievements-list"></div>
+    </div>
+    
     <p><strong>Controles:</strong> Use as setas ou WASD para mover o personagem. Pressione <kbd>E</kbd> próximo ao vendedor de frutas para abrir a lojinha de vendas. Pressione <kbd>Q</kbd> próximo ao vendedor de sementes para abrir a loja de sementes e comprar. Pressione <kbd>5</kbd> para plantar e <kbd>6</kbd> para colher. O crescimento das plantas é automático (aprox. 1 minuto por planta). Colha a planta quando estiver madura.</p>
   </div>
 
@@ -764,6 +844,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const genderSelect = document.getElementById('gender');
   const gameContainer = document.getElementById('game-container');
   const mobileControls = document.getElementById('mobile-controls');
+  const achievementsList = document.getElementById('achievements-list');
   
   const characterImgMale = new Image();
   characterImgMale.src = 'https://i.pinimg.com/originals/d7/18/dc/d718dcbe1181bc4a702e3743c4366ea6.png';
@@ -860,55 +941,121 @@ document.addEventListener('DOMContentLoaded', () => {
     {name: 'Árvore de Algodão', cost: 65000, rarity: 'Especial', sellPrice: 130000, color: '#ffffff', icon: '🌳', desc: 'Evento especial - disponível por tempo limitado!'}
   ];
 
+  // Sistema de Conquistas
+  const ACHIEVEMENTS = [
+    {
+      id: 'first_plant',
+      name: 'Primeira Planta',
+      desc: 'Plante sua primeira semente',
+      icon: '🌱',
+      condition: (game) => Object.values(game.garden.flat()).filter(Boolean).length >= 1
+    },
+    {
+      id: 'pet_lover',
+      name: 'Amante de Pets',
+      desc: 'Tenha 1 pet',
+      icon: '🐾',
+      condition: (game) => Object.keys(game.ownedPets).length >= 1
+    },
+    {
+      id: 'pet_master',
+      name: 'Mestre dos Pets',
+      desc: 'Tenha 3 pets',
+      icon: '🏆',
+      condition: (game) => Object.keys(game.ownedPets).length >= 3
+    },
+    {
+      id: 'rich_farmer',
+      name: 'Fazendeiro Rico',
+      desc: 'Acumule 100,000 moedas',
+      icon: '💰',
+      condition: (game) => game.coins >= 100000
+    },
+    {
+      id: 'rare_collector',
+      name: 'Colecionador Raro',
+      desc: 'Tenha 5 plantas lendárias ou míticas',
+      icon: '🌟',
+      condition: (game) => {
+        const rarePlants = Object.entries(game.inventory.fruits || {}).filter(([idx]) => {
+          const seed = SEEDS[Number(idx)];
+          return seed.rarity === 'Lendária' || seed.rarity === 'Mitico';
+        });
+        return rarePlants.reduce((sum, [_, count]) => sum + count, 0) >= 5;
+      }
+    },
+    {
+      id: 'max_level_pet',
+      name: 'Treinador Expert',
+      desc: 'Tenha um pet no nível máximo',
+      icon: '⭐',
+      condition: (game) => Object.values(game.ownedPets).some(pet => pet.level >= 5)
+    }
+  ];
+
+  // Atributos dos pets por nível
+  const PET_LEVELS = {
+    1: { scale: 0.15, bonus: 0, xpRequired: 0 },
+    2: { scale: 0.18, bonus: 1, xpRequired: 5 },
+    3: { scale: 0.21, bonus: 2, xpRequired: 10 },
+    4: { scale: 0.24, bonus: 3, xpRequired: 20 },
+    5: { scale: 0.27, bonus: 5, xpRequired: 40 }
+  };
+
   // Configurações dos pets
   const PETS = {
     CAT: {
       name: 'Amigo Pet',
       cost: 50000,
       icon: '🐾',
-      desc: 'Reduz 5 segundos do tempo de espera das frutas',
+      desc: 'Reduz o tempo de espera das frutas',
       img: petImg,
-      effect: (plant) => {
-        if(plant) plant.growTimeMs = Math.max(1000, plant.growTimeMs - 5000);
+      effect: (plant, level) => {
+        const bonus = PET_LEVELS[level].bonus;
+        if(plant) plant.growTimeMs = Math.max(1000, plant.growTimeMs - (5000 + bonus * 1000));
       }
     },
     RACCOON: {
       name: 'Guaxinim Coletor',
       cost: 150000,
       icon: '🦝',
-      desc: 'A cada 2 minutos coleta uma semente épica, lendária ou mítica',
+      desc: 'Coleta sementes épicas, lendárias ou míticas',
       img: raccoonImg,
-      effect: (gameState) => {
-        // 75% épica, 24% lendária, 1% mítica
-        const rand = Math.random();
-        let seedType;
+      effect: (gameState, level) => {
+        const bonus = PET_LEVELS[level].bonus;
+        const seedTypes = [
+          ...Array(6 + bonus).fill('Épica'),    // 6-9
+          ...Array(3 + Math.floor(bonus/2)).fill('Lendária'), // 10-13
+          ...Array(1 + Math.floor(bonus/3)).fill('Mitico')    // 14-16
+        ];
         
-        if(rand <= 0.75) {
-          // Épica (índices 6-9)
-          seedType = Math.floor(Math.random() * 4) + 6;
-        } else if(rand <= 0.99) {
-          // Lendária (índices 10-13)
-          seedType = Math.floor(Math.random() * 4) + 10;
+        const seedType = seedTypes[Math.floor(Math.random() * seedTypes.length)];
+        let seedIdx;
+        
+        if(seedType === 'Épica') {
+          seedIdx = Math.floor(Math.random() * 4) + 6;
+        } else if(seedType === 'Lendária') {
+          seedIdx = Math.floor(Math.random() * 4) + 10;
         } else {
-          // Mítica (índices 14-16)
-          seedType = Math.floor(Math.random() * 3) + 14;
+          seedIdx = Math.floor(Math.random() * 3) + 14;
         }
         
-        if(!gameState.inventory[seedType]) gameState.inventory[seedType] = 0;
-        gameState.inventory[seedType]++;
+        if(!gameState.inventory[seedIdx]) gameState.inventory[seedIdx] = 0;
+        gameState.inventory[seedIdx]++;
         updateUI();
-        return SEEDS[seedType].name;
+        return SEEDS[seedIdx].name;
       }
     },
     BEE: {
       name: 'Abelha Polinizadora',
       cost: 100000,
       icon: '🐝',
-      desc: 'A cada 1 minuto poliniza uma planta aleatória, aumentando 1.4x seu valor',
+      desc: 'Poliniza plantas aumentando seu valor',
       img: beeImg,
-      effect: (gameState) => {
-        // Encontra todas as plantas no jardim
+      effect: (gameState, level) => {
+        const bonus = PET_LEVELS[level].bonus;
         const plants = [];
+        
         for(let y = 0; y < GRID_ROWS; y++) {
           for(let x = 0; x < GRID_COLS; x++) {
             if(gameState.garden[y][x]) {
@@ -918,9 +1065,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if(plants.length > 0) {
-          // Escolhe uma planta aleatória
           const randomPlant = plants[Math.floor(Math.random() * plants.length)];
           randomPlant.plant.variant = 'POLINIZED';
+          // Bônus aumenta com o nível (1.4x + 0.1x por nível)
+          PLANT_VARIANTS.POLINIZED.bonus = 1.4 + (0.1 * bonus);
           draw();
           return SEEDS[randomPlant.plant.seedIdx].name;
         }
@@ -937,6 +1085,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Timer para evento especial (Árvore de Algodão)
   let eventEndTime = Date.now() + (14 * 24 * 60 * 60 * 1000); // 2 semanas a partir de agora
   
+  // Dinheiro inicial ajustado para 5000
+  let gameState = {
+    coins: 5000,
+    garden: Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null)),
+    playerPos: {x:0, y:0},
+    inventory: {},
+    shopOpenFruits: false,
+    shopOpenSeeds: false,
+    ownedPets: {}, // Agora armazena objetos com {type, level, xp}
+    unlockedAchievements: {},
+    playerSkinImg: null,
+    username: '',
+    playerId: Math.random().toString(36).substr(2, 9)
+  };
+  
+  let petPositions = {
+    cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+    raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+    bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+  };
+
   function generateShopStock() {
     shopStock = {};
     
@@ -993,26 +1162,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Dinheiro inicial ajustado para 5000
-  let gameState = {
-    coins: 5000,
-    garden: Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null)),
-    playerPos: {x:0, y:0},
-    inventory: {},
-    shopOpenFruits: false,
-    shopOpenSeeds: false,
-    ownedPets: {}, // Agora pode ter múltiplos pets
-    playerSkinImg: null,
-    username: '',
-    playerId: Math.random().toString(36).substr(2, 9)
-  };
-  
-  let petPositions = {
-    cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
-    raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
-    bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
-  };
-
   function getRandomVariant() {
     const rand = Math.random();
     let cumulative = 0;
@@ -1053,8 +1202,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let growTimeMs = rarityTimes[seed.rarity] || 60000;
     
     // Aplica efeito do pet gato se existir
-    if(gameState.ownedPets.cat) {
-      growTimeMs = Math.max(1000, growTimeMs - 5000);
+    if(gameState.ownedPets.CAT) {
+      const petData = gameState.ownedPets.CAT;
+      const bonus = PET_LEVELS[petData.level].bonus;
+      growTimeMs = Math.max(1000, growTimeMs - (5000 + bonus * 1000));
     }
     
     const progress = Math.min(elapsed/growTimeMs,1);
@@ -1146,47 +1297,74 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function drawPets(){
-    // Desenha cada pet que o jogador possui
-    for(const petType in gameState.ownedPets) {
-      if(gameState.ownedPets[petType]) {
-        const pet = PETS[petType];
-        const pos = petPositions[petType];
-        const px = pos.x * TILE_SIZE;
-        const py = pos.y * TILE_SIZE;
-        const scale = 0.2;
-        const imgW = pet.img.width * scale;
-        const imgH = pet.img.height * scale;
-        const drawX = px + TILE_SIZE/2 - imgW/2;
-        const drawY = py + TILE_SIZE - imgH * 0.9;
-        if(pet.img.complete){
-          ctx.drawImage(pet.img, drawX, drawY, imgW, imgH);
-        }
+    // Desenha cada pet que o jogador possui (limite de 3)
+    const activePets = Object.entries(gameState.ownedPets)
+      .slice(0, 3) // Limite de 3 pets ativos
+      .map(([petType, petData]) => ({ petType, ...petData }));
+    
+    activePets.forEach(({ petType, level = 1 }) => {
+      const pet = PETS[petType];
+      const pos = petPositions[petType];
+      const px = pos.x * TILE_SIZE;
+      const py = pos.y * TILE_SIZE;
+      const scale = PET_LEVELS[level].scale;
+      const imgW = pet.img.width * scale;
+      const imgH = pet.img.height * scale;
+      const drawX = px + TILE_SIZE/2 - imgW/2;
+      const drawY = py + TILE_SIZE - imgH * 0.9;
+      
+      if(pet.img.complete){
+        ctx.drawImage(pet.img, drawX, drawY, imgW, imgH);
+        
+        // Desenhar nível do pet
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(px + TILE_SIZE - 15, py + TILE_SIZE - 15, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(level, px + TILE_SIZE - 15, py + TILE_SIZE - 15);
       }
-    }
+    });
   }
   
   function movePetsRandomly(){
-    for(const petType in gameState.ownedPets) {
-      if(gameState.ownedPets[petType]) {
-        const directions = [
-          { dx: 0, dy: -1 },
-          { dx: 0, dy: 1 },
-          { dx: -1, dy: 0 },
-          { dx: 1, dy: 0 }
-        ];
+    const directions = [
+      { dx: 0, dy: -1 }, // Cima
+      { dx: 0, dy: 1 },  // Baixo
+      { dx: -1, dy: 0 }, // Esquerda
+      { dx: 1, dy: 0 },  // Direita
+      { dx: 0, dy: 0 }   // Fica parado (30% chance)
+    ];
+    
+    // Mover apenas os 3 pets ativos
+    const activePets = Object.keys(gameState.ownedPets).slice(0, 3);
+    
+    activePets.forEach(petType => {
+      // 70% de chance de se mover (30% de ficar parado)
+      if(Math.random() < 0.7) {
         const randomDirection = directions[Math.floor(Math.random() * directions.length)];
         const newX = petPositions[petType].x + randomDirection.dx;
         const newY = petPositions[petType].y + randomDirection.dy;
-        if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS){
-          if(!((newX === gameState.playerPos.x && newY === gameState.playerPos.y) ||
-               (newX === sellerPosFruits.x && newY === sellerPosFruits.y) ||
-               (newX === sellerPosSeeds.x && newY === sellerPosSeeds.y))) {
+        
+        // Verificar limites do mapa e colisões
+        if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS) {
+          // Verificar se não está colidindo com jogador, vendedores ou outros pets
+          const isBlocked = 
+            (newX === gameState.playerPos.x && newY === gameState.playerPos.y) ||
+            (newX === sellerPosFruits.x && newY === sellerPosFruits.y) ||
+            (newX === sellerPosSeeds.x && newY === sellerPosSeeds.y) ||
+            Object.values(petPositions).some(pos => pos.x === newX && pos.y === newY);
+          
+          if(!isBlocked) {
             petPositions[petType].x = newX;
             petPositions[petType].y = newY;
           }
         }
       }
-    }
+    });
   }
 
   function draw(){
@@ -1199,6 +1377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI(){
     coinCountEl.textContent = 'Moedas: ' + gameState.coins;
     updateInventoryUI();
+    checkAchievements();
   }
 
   function updateInventoryUI(){
@@ -1264,13 +1443,44 @@ document.addEventListener('DOMContentLoaded', () => {
       for(const petType in gameState.ownedPets) {
         if(gameState.ownedPets[petType]) {
           const pet = PETS[petType];
+          const petData = gameState.ownedPets[petType];
           const petItem = document.createElement('div');
           petItem.className = 'inventory-item';
-          petItem.textContent = `${pet.icon} ${pet.name} (${pet.desc})`;
+          petItem.textContent = `${pet.icon} ${pet.name} (Nível ${petData.level})`;
           inventoryList.appendChild(petItem);
         }
       }
     }
+  }
+
+  // Função para verificar conquistas
+  function checkAchievements() {
+    ACHIEVEMENTS.forEach(achievement => {
+      if(!gameState.unlockedAchievements[achievement.id] && achievement.condition(gameState)) {
+        gameState.unlockedAchievements[achievement.id] = true;
+        alert(`Conquista desbloqueada: ${achievement.name} - ${achievement.desc}`);
+        updateAchievementsUI();
+      }
+    });
+  }
+
+  // Atualizar UI das conquistas
+  function updateAchievementsUI() {
+    achievementsList.innerHTML = '';
+    
+    ACHIEVEMENTS.forEach(achievement => {
+      const unlocked = gameState.unlockedAchievements[achievement.id];
+      const achievementEl = document.createElement('div');
+      achievementEl.className = `achievement-item ${unlocked ? '' : 'achievement-locked'}`;
+      achievementEl.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-info">
+          <div class="achievement-name">${achievement.name}</div>
+          <div class="achievement-desc">${unlocked ? achievement.desc : '?????'}</div>
+        </div>
+      `;
+      achievementsList.appendChild(achievementEl);
+    });
   }
 
   function movePlayer(dx, dy){
@@ -1351,8 +1561,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let growTimeMs = rarityTimes[seed.rarity] || 60000;
     
     // Aplica efeito do pet gato se existir
-    if(gameState.ownedPets.cat) {
-      growTimeMs = Math.max(1000, growTimeMs - 5000);
+    if(gameState.ownedPets.CAT) {
+      const petData = gameState.ownedPets.CAT;
+      const bonus = PET_LEVELS[petData.level].bonus;
+      growTimeMs = Math.max(1000, growTimeMs - (5000 + bonus * 1000));
     }
     
     const elapsed = Date.now() - plant.plantedAt;
@@ -1432,7 +1644,8 @@ document.addEventListener('DOMContentLoaded', () => {
     for(const petType in gameState.ownedPets) {
       if(gameState.ownedPets[petType]) {
         const pet = PETS[petType];
-        const sellPrice = Math.floor(pet.cost * 0.5); // Vende por 50% do valor
+        const petData = gameState.ownedPets[petType];
+        const sellPrice = Math.floor(pet.cost * 0.5 * (1 + petData.level * 0.2)); // Vende por 50% + 10% por nível
         
         const petEl = document.createElement('div');
         petEl.className = 'fruit-item';
@@ -1441,7 +1654,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="display: flex; align-items: center;">
             <span class="fruit-icon">${pet.icon}</span>
             <div class="fruit-details">
-              <div class="fruit-name">${pet.name}</div>
+              <div class="fruit-name">${pet.name} (Nível ${petData.level})</div>
               <div class="fruit-rarity">Especial</div>
             </div>
           </div>
@@ -1449,7 +1662,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         petEl.addEventListener('click', () => {
-          if(confirm(`Vender seu ${pet.name} por ${sellPrice} moedas?`)) {
+          if(confirm(`Vender seu ${pet.name} (Nível ${petData.level}) por ${sellPrice} moedas?`)) {
             gameState.coins += sellPrice;
             delete gameState.ownedPets[petType];
             updateUI();
@@ -1733,27 +1946,54 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
+    // Limite de pets
+    if(Object.keys(gameState.ownedPets).length >= 5) {
+      alert('Você já tem muitos pets! O limite é 5.');
+      return;
+    }
+    
     gameState.coins -= pet.cost;
-    gameState.ownedPets[petType] = true;
+    gameState.ownedPets[petType] = {
+      type: petType,
+      level: 1,
+      xp: 0
+    };
     
     // Inicia o efeito do pet
-    if(petType === 'raccoon') {
-      // Guaxinim coleta sementes a cada 2 minutos
+    if(petType === 'RACCOON') {
       setInterval(() => {
-        if(gameState.ownedPets.raccoon) {
-          const seedName = pet.effect(gameState);
+        if(gameState.ownedPets.RACCOON) {
+          const petData = gameState.ownedPets.RACCOON;
+          const seedName = pet.effect(gameState, petData.level);
           if(seedName) {
+            // Ganha XP por coletar sementes
+            petData.xp++;
+            if(petData.xp >= PET_LEVELS[petData.level].xpRequired && petData.level < 5) {
+              petData.level++;
+              petData.xp = 0;
+              alert(`Seu ${pet.name} subiu para o nível ${petData.level}!`);
+              draw();
+            }
             alert(`Seu Guaxinim Coletor encontrou uma semente de ${seedName}!`);
           }
         }
       }, 2 * 60 * 1000); // 2 minutos
-    } else if(petType === 'bee') {
-      // Abelha poliniza plantas a cada 1 minuto
+    } else if(petType === 'BEE') {
       setInterval(() => {
-        if(gameState.ownedPets.bee) {
-          const plantName = pet.effect(gameState);
+        if(gameState.ownedPets.BEE) {
+          const petData = gameState.ownedPets.BEE;
+          const plantName = pet.effect(gameState, petData.level);
           if(plantName) {
-            alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em 1.4x!`);
+            // Ganha XP por polinizar plantas
+            petData.xp++;
+            if(petData.xp >= PET_LEVELS[petData.level].xpRequired && petData.level < 5) {
+              petData.level++;
+              petData.xp = 0;
+              alert(`Seu ${pet.name} subiu para o nível ${petData.level}!`);
+              draw();
+            }
+            const bonus = (1.4 + (0.1 * PET_LEVELS[petData.level].bonus)).toFixed(1);
+            alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em ${bonus}x!`);
           }
         }
       }, 60 * 1000); // 1 minuto
@@ -1773,6 +2013,7 @@ document.addEventListener('DOMContentLoaded', () => {
         garden: gameState.garden,
         inventory: gameState.inventory,
         ownedPets: gameState.ownedPets,
+        unlockedAchievements: gameState.unlockedAchievements,
         playerSkin: gameState.playerSkinImg ? gameState.playerSkinImg.src : null,
         playerPos: gameState.playerPos,
         username: gameState.username,
@@ -1798,15 +2039,16 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.inventory = data.inventory ?? {};
       if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
       gameState.ownedPets = data.ownedPets || {};
+      gameState.unlockedAchievements = data.unlockedAchievements || {};
       gameState.playerPos = data.playerPos ?? {x:0, y:Math.floor(GRID_ROWS/2)};
       gameState.username = data.username || 'Jogador';
       eventEndTime = data.eventEndTime || (Date.now() + (14 * 24 * 60 * 60 * 1000));
 
       // Posiciona os pets perto do jogador
       petPositions = {
-        cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
-        raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
-        bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+        CAT: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+        RACCOON: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+        BEE: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
       };
 
       if(data.playerSkin === characterImgMale.src) gameState.playerSkinImg = characterImgMale;
@@ -1817,21 +2059,40 @@ document.addEventListener('DOMContentLoaded', () => {
       for(const petType in gameState.ownedPets) {
         if(gameState.ownedPets[petType]) {
           const pet = PETS[petType];
-          if(petType === 'raccoon') {
+          const petData = gameState.ownedPets[petType];
+          
+          if(petType === 'RACCOON') {
             setInterval(() => {
-              if(gameState.ownedPets.raccoon) {
-                const seedName = pet.effect(gameState);
+              if(gameState.ownedPets.RACCOON) {
+                const petData = gameState.ownedPets.RACCOON;
+                const seedName = pet.effect(gameState, petData.level);
                 if(seedName) {
+                  petData.xp++;
+                  if(petData.xp >= PET_LEVELS[petData.level].xpRequired && petData.level < 5) {
+                    petData.level++;
+                    petData.xp = 0;
+                    alert(`Seu ${pet.name} subiu para o nível ${petData.level}!`);
+                    draw();
+                  }
                   alert(`Seu Guaxinim Coletor encontrou uma semente de ${seedName}!`);
                 }
               }
             }, 2 * 60 * 1000);
-          } else if(petType === 'bee') {
+          } else if(petType === 'BEE') {
             setInterval(() => {
-              if(gameState.ownedPets.bee) {
-                const plantName = pet.effect(gameState);
+              if(gameState.ownedPets.BEE) {
+                const petData = gameState.ownedPets.BEE;
+                const plantName = pet.effect(gameState, petData.level);
                 if(plantName) {
-                  alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em 1.4x!`);
+                  petData.xp++;
+                  if(petData.xp >= PET_LEVELS[petData.level].xpRequired && petData.level < 5) {
+                    petData.level++;
+                    petData.xp = 0;
+                    alert(`Seu ${pet.name} subiu para o nível ${petData.level}!`);
+                    draw();
+                  }
+                  const bonus = (1.4 + (0.1 * PET_LEVELS[petData.level].bonus)).toFixed(1);
+                  alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em ${bonus}x!`);
                 }
               }
             }, 60 * 1000);
@@ -1841,6 +2102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       alert('Jogo carregado com sucesso!');
       updateUI();
+      updateAchievementsUI();
       draw();
       return true;
     } catch (e) {
@@ -1934,8 +2196,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         break;
       case '5':
-        case 'p':
-        case 'P':
+      case 'p':
+      case 'P':
         plantSeedFromInventory();
         e.preventDefault();
         break;
@@ -1987,9 +2249,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Configura posições iniciais dos pets
     petPositions = {
-      cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
-      raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
-      bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+      CAT: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+      RACCOON: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+      BEE: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
     };
     
     // Move pets aleatoriamente a cada 2 segundos
