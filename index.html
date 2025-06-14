@@ -546,6 +546,81 @@
     background: #00bcd4;
   }
 
+  /* NOVOS ESTILOS PARA BOTÕES MOBILE */
+  #mobile-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    margin: 0 10px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+
+  .mobile-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #00bcd4;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.5);
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+  }
+
+  .mobile-btn:active {
+    transform: scale(0.95);
+    background: #0097a7;
+    box-shadow: 0 2px 5px rgba(0, 151, 167, 0.5);
+  }
+
+  .mobile-btn.action-btn {
+    width: 120px;
+    border-radius: 35px;
+    font-size: 16px;
+  }
+
+  #mobile-direction-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  #btn-up { grid-column: 2; grid-row: 1; }
+  #btn-left { grid-column: 1; grid-row: 2; }
+  #btn-down { grid-column: 2; grid-row: 3; }
+  #btn-right { grid-column: 3; grid-row: 2; }
+
+  #mobile-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (max-width: 768px) {
+    #mobile-controls {
+      display: flex;
+    }
+    
+    #game-container {
+      padding-bottom: 120px; /* Espaço para os botões mobile */
+    }
+  }
+
   /* Responsive adjustments */
   @media (max-width: 1200px) {
     #game-container {
@@ -626,7 +701,7 @@
 
   <div id="seller-info-pet" aria-label="Amigo Pet">
     <img src="https://static.wikia.nocookie.net/growagarden/images/f/f3/GoldenLabPet.png/revision/latest/scale-to-width-down/250?cb=20250515232516" alt="Sprite do pet, cachorro dourado estilo desenho animado, colorido e simpático" />
-    <span>Pet amigo: reduz 5 segundos do tempo de espera das frutas, custa 50000 moedas</span>
+    <span>Pet amigo: reduz 5s de espera das frutas</span>
   </div>
   
   <div id="shop-modal-fruits" role="dialog" aria-modal="true" aria-labelledby="shop-title-fruits" tabindex="-1">
@@ -643,20 +718,28 @@
   </div>
 </div>
 
-<!-- Mobile controls -->
+<!-- Mobile controls - VERSÃO ATUALIZADA -->
 <div id="mobile-controls" aria-label="Controles para dispositivos móveis">
-  <button class="mobile-btn" id="btn-up" aria-label="Mover para cima">↑</button>
-  <button class="mobile-btn" id="btn-left" aria-label="Mover para esquerda">←</button>
-  <button class="mobile-btn" id="btn-down" aria-label="Mover para baixo">↓</button>
-  <button class="mobile-btn" id="btn-right" aria-label="Mover para direita">→</button>
-  <button class="mobile-btn" id="btn-plant" aria-label="Plantar semente">Plantar (5)</button>
-  <button class="mobile-btn" id="btn-harvest" aria-label="Colher planta">Colher (6)</button>
-  <button class="mobile-btn" id="btn-shop-fruits" aria-label="Abrir loja de frutas">Loja Frutas (E)</button>
-  <button class="mobile-btn" id="btn-shop-seeds" aria-label="Abrir loja de sementes">Loja Sementes (Q)</button>
+  <div id="mobile-direction-pad">
+    <button class="mobile-btn" id="btn-up" aria-label="Mover para cima">↑</button>
+    <button class="mobile-btn" id="btn-left" aria-label="Mover para esquerda">←</button>
+    <button class="mobile-btn" id="btn-down" aria-label="Mover para baixo">↓</button>
+    <button class="mobile-btn" id="btn-right" aria-label="Mover para direita">→</button>
+  </div>
+  
+  <div id="mobile-action-buttons">
+    <button class="mobile-btn action-btn" id="btn-plant" aria-label="Plantar semente">Plantar</button>
+    <button class="mobile-btn action-btn" id="btn-harvest" aria-label="Colher planta">Colher</button>
+    <button class="mobile-btn action-btn" id="btn-shop-fruits" aria-label="Abrir loja de frutas">Loja Frutas</button>
+    <button class="mobile-btn action-btn" id="btn-shop-seeds" aria-label="Abrir loja de sementes">Loja Sementes</button>
+  </div>
 </div>
 
-<!-- Background OST -->
-<audio id="game-ost" src="https://cdn.pixabay.com/download/audio/2022/06/22/audio_4bcb45ec7e.mp3?filename=happy-ukulele-110986.mp3" loop preload="auto"></audio>
+<!-- Background OST - Música atualizada -->
+<audio id="game-ost" loop preload="auto">
+  <source src="https://www.youtube.com/watch?v=cl68eYKej7k" type="audio/mpeg">
+  Seu navegador não suporta o elemento de áudio.
+</audio>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -692,13 +775,20 @@ document.addEventListener('DOMContentLoaded', () => {
   sellerImgSeeds.src = 'https://i.pinimg.com/originals/82/7f/ba/827fba5fcec845b8990afcde7d9d0926.png';
   const gameOst = document.getElementById('game-ost');
 
+  // Sprites dos pets
   const petImg = new Image();
   petImg.src = 'https://tiermaker.com/images/media/template_images/2024/16807765/grow-a-garden-pet-16807765/cat.png';
+  
+  const raccoonImg = new Image();
+  raccoonImg.src = 'https://tr.rbxcdn.com/180DAY-24e6da41abd816b879b34aa5d968944f/420/420/Hat/Webp/noFilter';
+  
+  const beeImg = new Image();
+  beeImg.src = 'https://tr.rbxcdn.com/180DAY-1924d553e8d83a2d2f800183fa7f40f6/420/420/Hat/Webp/noFilter';
 
   // Configurações do mapa aumentado
   const TILE_SIZE = 64;
-  const GRID_COLS = 16; // Aumentado de 12 para 16
-  const GRID_ROWS = 10; // Aumentado de 8 para 10
+  const GRID_COLS = 16;
+  const GRID_ROWS = 10;
   
   // Posições dos vendedores nos cantos
   const sellerPosFruits = { x: GRID_COLS - 2, y: 1 };
@@ -724,7 +814,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'Raro': 30000,
     'Épica': 60000,
     'Lendária': 90000,
-    'Mitico': 120000
+    'Mitico': 120000,
+    'Especial': 30000
   };
 
   // Variantes de plantas
@@ -732,7 +823,8 @@ document.addEventListener('DOMContentLoaded', () => {
     NORMAL: { chance: 0.85, bonus: 1, color: null, symbol: '' },
     GOLDEN: { chance: 0.03, bonus: 2, color: '#ffd700', symbol: '★' },
     SILVER: { chance: 0.07, bonus: 1.5, color: '#c0c0c0', symbol: '✦' },
-    CRYSTAL: { chance: 0.05, bonus: 1.8, color: '#00bcd4', symbol: '❄' }
+    CRYSTAL: { chance: 0.05, bonus: 1.8, color: '#00bcd4', symbol: '❄' },
+    POLINIZED: { chance: 0, bonus: 1.4, color: '#f1c40f', symbol: '🐝' } // Nova variante para plantas polinizadas
   };
 
   // PREÇOS BALANCEADOS (COMPRA/VENDA)
@@ -751,29 +843,108 @@ document.addEventListener('DOMContentLoaded', () => {
     {name: 'Banana', cost: 2000, rarity: 'Épica', sellPrice: 6000, color: '#ffe135', icon: '🍌', desc: 'Para fazendeiros experientes'},
     {name: 'Uva', cost: 3000, rarity: 'Épica', sellPrice: 9000, color: '#6f2da8', icon: '🍇', desc: 'Vinhedo de alto padrão'},
     {name: 'Manga', cost: 4000, rarity: 'Épica', sellPrice: 12000, color: '#ffb347', icon: '🥭', desc: 'Sabor caro'},
+    {name: 'Flor de Lótus', cost: 3500, rarity: 'Épica', sellPrice: 10500, color: '#e6a8d7', icon: '🌸', desc: 'Flor sagrada rara'},
     
     // Lendária - ROI ~3.5x
     {name: 'Melancia', cost: 6000, rarity: 'Lendária', sellPrice: 21000, color: '#4cd137', icon: '🍉', desc: 'Investimento pesado'},
     {name: 'Cereja', cost: 8000, rarity: 'Lendária', sellPrice: 28000, color: '#b11226', icon: '🍒', desc: 'Luxo frutal'},
     {name: 'Maracujá', cost: 10000, rarity: 'Lendária', sellPrice: 35000, color: '#ffcb05', icon: '🍈', desc: 'Para milionários'},
+    {name: 'Orquídea Negra', cost: 12000, rarity: 'Lendária', sellPrice: 42000, color: '#663399', icon: '🌺', desc: 'Flor lendária raríssima'},
     
     // Mítico - ROI ~4x
     {name: 'Pitaya', cost: 15000, rarity: 'Mitico', sellPrice: 60000, color: '#ff3399', icon: '🐉', desc: 'Cultivo de elite'},
     {name: 'Durian', cost: 25000, rarity: 'Mitico', sellPrice: 100000, color: '#a2d729', icon: '🌰', desc: 'Só para magnatas'},
-    {name: 'Kiwi dourado', cost: 30000, rarity: 'Mitico', sellPrice: 120000, color: '#ffd700', icon: '🥝', desc: 'Investimento bilionário'}
+    {name: 'Kiwi dourado', cost: 30000, rarity: 'Mitico', sellPrice: 120000, color: '#ffd700', icon: '🥝', desc: 'Investimento bilionário'},
+    
+    // Especial - Evento
+    {name: 'Árvore de Algodão', cost: 65000, rarity: 'Especial', sellPrice: 130000, color: '#ffffff', icon: '🌳', desc: 'Evento especial - disponível por tempo limitado!'}
   ];
 
-  const PET_COST = 50000; 
-  const PET_ICON = '🐾';
+  // Configurações dos pets
+  const PETS = {
+    CAT: {
+      name: 'Amigo Pet',
+      cost: 50000,
+      icon: '🐾',
+      desc: 'Reduz 5 segundos do tempo de espera das frutas',
+      img: petImg,
+      effect: (plant) => {
+        if(plant) plant.growTimeMs = Math.max(1000, plant.growTimeMs - 5000);
+      }
+    },
+    RACCOON: {
+      name: 'Guaxinim Coletor',
+      cost: 150000,
+      icon: '🦝',
+      desc: 'A cada 2 minutos coleta uma semente épica, lendária ou mítica',
+      img: raccoonImg,
+      effect: (gameState) => {
+        // 75% épica, 24% lendária, 1% mítica
+        const rand = Math.random();
+        let seedType;
+        
+        if(rand <= 0.75) {
+          // Épica (índices 6-9)
+          seedType = Math.floor(Math.random() * 4) + 6;
+        } else if(rand <= 0.99) {
+          // Lendária (índices 10-13)
+          seedType = Math.floor(Math.random() * 4) + 10;
+        } else {
+          // Mítica (índices 14-16)
+          seedType = Math.floor(Math.random() * 3) + 14;
+        }
+        
+        if(!gameState.inventory[seedType]) gameState.inventory[seedType] = 0;
+        gameState.inventory[seedType]++;
+        updateUI();
+        return SEEDS[seedType].name;
+      }
+    },
+    BEE: {
+      name: 'Abelha Polinizadora',
+      cost: 100000,
+      icon: '🐝',
+      desc: 'A cada 1 minuto poliniza uma planta aleatória, aumentando 1.4x seu valor',
+      img: beeImg,
+      effect: (gameState) => {
+        // Encontra todas as plantas no jardim
+        const plants = [];
+        for(let y = 0; y < GRID_ROWS; y++) {
+          for(let x = 0; x < GRID_COLS; x++) {
+            if(gameState.garden[y][x]) {
+              plants.push({x, y, plant: gameState.garden[y][x]});
+            }
+          }
+        }
+        
+        if(plants.length > 0) {
+          // Escolhe uma planta aleatória
+          const randomPlant = plants[Math.floor(Math.random() * plants.length)];
+          randomPlant.plant.variant = 'POLINIZED';
+          draw();
+          return SEEDS[randomPlant.plant.seedIdx].name;
+        }
+        return null;
+      }
+    }
+  };
 
   // Sistema de estoque da loja
   let shopStock = {};
   let shopResetTimer = null;
   let shopResetTime = 4 * 60; // 4 minutos em segundos
   
+  // Timer para evento especial (Árvore de Algodão)
+  let eventEndTime = Date.now() + (14 * 24 * 60 * 60 * 1000); // 2 semanas a partir de agora
+  
   function generateShopStock() {
     shopStock = {};
-    SEEDS.forEach(seed => {
+    
+    // Primeiro geramos as sementes normais (todas exceto Árvore de Algodão)
+    SEEDS.forEach((seed, idx) => {
+      // Pula a Árvore de Algodão - ela será tratada separadamente
+      if(seed.name === 'Árvore de Algodão') return;
+      
       let chance;
       switch(seed.rarity) {
         case 'Comum': chance = 0.75; break;
@@ -786,9 +957,15 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if(Math.random() < chance) {
         const quantity = Math.floor(Math.random() * 20) + 1; // 1-20
-        shopStock[SEEDS.indexOf(seed)] = quantity;
+        shopStock[idx] = quantity;
       }
     });
+    
+    // Tratamento especial para Árvore de Algodão - 0.2% de chance
+    const cottonIndex = SEEDS.findIndex(s => s.name === 'Árvore de Algodão');
+    if(Math.random() < 0.002 && Date.now() < eventEndTime) { // 0.2% de chance
+      shopStock[cottonIndex] = 1; // Apenas 1 disponível
+    }
     
     // Resetar o timer
     shopResetTime = 4 * 60;
@@ -824,13 +1001,17 @@ document.addEventListener('DOMContentLoaded', () => {
     inventory: {},
     shopOpenFruits: false,
     shopOpenSeeds: false,
-    petOwned: false,
+    ownedPets: {}, // Agora pode ter múltiplos pets
     playerSkinImg: null,
     username: '',
     playerId: Math.random().toString(36).substr(2, 9)
   };
   
-  let petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+  let petPositions = {
+    cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+    raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+    bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+  };
 
   function getRandomVariant() {
     const rand = Math.random();
@@ -870,7 +1051,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const seed = SEEDS[plant.seedIdx];
     const elapsed = Date.now() - plant.plantedAt;
     let growTimeMs = rarityTimes[seed.rarity] || 60000;
-    if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
+    
+    // Aplica efeito do pet gato se existir
+    if(gameState.ownedPets.cat) {
+      growTimeMs = Math.max(1000, growTimeMs - 5000);
+    }
+    
     const progress = Math.min(elapsed/growTimeMs,1);
     const radius = progress * (TILE_SIZE / 2 - 8);
     
@@ -879,6 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(plant.variant === 'GOLDEN') plantColor = '#ffd700';
     else if(plant.variant === 'SILVER') plantColor = '#c0c0c0';
     else if(plant.variant === 'CRYSTAL') plantColor = '#00bcd4';
+    else if(plant.variant === 'POLINIZED') plantColor = '#f1c40f';
     
     ctx.beginPath();
     if(plant.variant !== 'NORMAL') {
@@ -958,37 +1145,46 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillText(gameState.username, px + TILE_SIZE/2, py - 5);
   }
 
-  function drawPet(){
-    if(!gameState.petOwned) return;
-    const px = petPos.x * TILE_SIZE;
-    const py = petPos.y * TILE_SIZE;
-    const scale = 0.2;
-    const imgW = petImg.width * scale;
-    const imgH = petImg.height * scale;
-    const drawX = px + TILE_SIZE/2 - imgW/2;
-    const drawY = py + TILE_SIZE - imgH * 0.9;
-    if(petImg.complete){
-      ctx.drawImage(petImg, drawX, drawY, imgW, imgH);
+  function drawPets(){
+    // Desenha cada pet que o jogador possui
+    for(const petType in gameState.ownedPets) {
+      if(gameState.ownedPets[petType]) {
+        const pet = PETS[petType];
+        const pos = petPositions[petType];
+        const px = pos.x * TILE_SIZE;
+        const py = pos.y * TILE_SIZE;
+        const scale = 0.2;
+        const imgW = pet.img.width * scale;
+        const imgH = pet.img.height * scale;
+        const drawX = px + TILE_SIZE/2 - imgW/2;
+        const drawY = py + TILE_SIZE - imgH * 0.9;
+        if(pet.img.complete){
+          ctx.drawImage(pet.img, drawX, drawY, imgW, imgH);
+        }
+      }
     }
   }
   
-  function movePetRandomly(){
-    if(!gameState.petOwned) return;
-    const directions = [
-      { dx: 0, dy: -1 },
-      { dx: 0, dy: 1 },
-      { dx: -1, dy: 0 },
-      { dx: 1, dy: 0 }
-    ];
-    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
-    const newX = petPos.x + randomDirection.dx;
-    const newY = petPos.y + randomDirection.dy;
-    if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS){
-      if(!((newX === gameState.playerPos.x && newY === gameState.playerPos.y) ||
-           (newX === sellerPosFruits.x && newY === sellerPosFruits.y) ||
-           (newX === sellerPosSeeds.x && newY === sellerPosSeeds.y))) {
-        petPos.x = newX;
-        petPos.y = newY;
+  function movePetsRandomly(){
+    for(const petType in gameState.ownedPets) {
+      if(gameState.ownedPets[petType]) {
+        const directions = [
+          { dx: 0, dy: -1 },
+          { dx: 0, dy: 1 },
+          { dx: -1, dy: 0 },
+          { dx: 1, dy: 0 }
+        ];
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        const newX = petPositions[petType].x + randomDirection.dx;
+        const newY = petPositions[petType].y + randomDirection.dy;
+        if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS){
+          if(!((newX === gameState.playerPos.x && newY === gameState.playerPos.y) ||
+               (newX === sellerPosFruits.x && newY === sellerPosFruits.y) ||
+               (newX === sellerPosSeeds.x && newY === sellerPosSeeds.y))) {
+            petPositions[petType].x = newX;
+            petPositions[petType].y = newY;
+          }
+        }
       }
     }
   }
@@ -997,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
     drawPlayer();
-    drawPet();
+    drawPets();
   }
 
   function updateUI(){
@@ -1010,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedKeys = Object.keys(gameState.inventory).filter(k => k !== 'fruits');
     const fruitKeys = (gameState.inventory.fruits) ? Object.keys(gameState.inventory.fruits) : [];
 
-    if(seedKeys.length === 0 && fruitKeys.length === 0 && !gameState.petOwned){
+    if(seedKeys.length === 0 && fruitKeys.length === 0 && Object.keys(gameState.ownedPets).length === 0){
       const empty = document.createElement('div');
       empty.textContent = 'Inventário vazio';
       empty.style.color = '#555';
@@ -1057,11 +1253,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    if(gameState.petOwned){
-      const petItem = document.createElement('div');
-      petItem.className = 'inventory-item';
-      petItem.textContent = `${PET_ICON} Amigo Pet (reduz 5s de espera)`;
-      inventoryList.appendChild(petItem);
+    // Mostra os pets no inventário
+    if(Object.keys(gameState.ownedPets).length > 0){
+      const petsHeader = document.createElement('div');
+      petsHeader.textContent = 'Pets:';
+      petsHeader.style.fontWeight = '700';
+      petsHeader.style.marginTop = '12px';
+      inventoryList.appendChild(petsHeader);
+
+      for(const petType in gameState.ownedPets) {
+        if(gameState.ownedPets[petType]) {
+          const pet = PETS[petType];
+          const petItem = document.createElement('div');
+          petItem.className = 'inventory-item';
+          petItem.textContent = `${pet.icon} ${pet.name} (${pet.desc})`;
+          inventoryList.appendChild(petItem);
+        }
+      }
     }
   }
 
@@ -1071,6 +1279,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if(nx >= 0 && nx < GRID_COLS && ny >= 0 && ny < GRID_ROWS){
       gameState.playerPos.x = nx;
       gameState.playerPos.y = ny;
+      
+      // Move os pets para perto do jogador
+      petPositions.cat = { 
+        x: Math.max(0, gameState.playerPos.x -1), 
+        y: gameState.playerPos.y 
+      };
+      petPositions.raccoon = { 
+        x: Math.max(0, gameState.playerPos.x -2), 
+        y: gameState.playerPos.y 
+      };
+      petPositions.bee = { 
+        x: Math.max(0, gameState.playerPos.x -3), 
+        y: gameState.playerPos.y 
+      };
+      
       draw();
     }
   }
@@ -1126,7 +1349,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const seed = SEEDS[plant.seedIdx];
     let growTimeMs = rarityTimes[seed.rarity] || 60000;
-    if(gameState.petOwned) growTimeMs = Math.max(1000, growTimeMs - 5000);
+    
+    // Aplica efeito do pet gato se existir
+    if(gameState.ownedPets.cat) {
+      growTimeMs = Math.max(1000, growTimeMs - 5000);
+    }
+    
     const elapsed = Date.now() - plant.plantedAt;
 
     if(elapsed < growTimeMs || !plant.isMature){
@@ -1168,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Criar array de frutas ordenadas por preço
+    // Criar array com todas as frutas disponíveis no inventário
     const fruitsForSale = Object.entries(gameState.inventory.fruits)
       .map(([seedIdx, count]) => {
         const seed = SEEDS[Number(seedIdx)];
@@ -1200,33 +1428,38 @@ document.addEventListener('DOMContentLoaded', () => {
       shopListFruits.appendChild(fruitEl);
     });
 
-    // Adicionar opção do pet se possuir
-    if(gameState.petOwned) {
-      const petEl = document.createElement('div');
-      petEl.className = 'fruit-item';
-      petEl.style.background = 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)';
-      petEl.innerHTML = `
-        <div style="display: flex; align-items: center;">
-          <span class="fruit-icon">${PET_ICON}</span>
-          <div class="fruit-details">
-            <div class="fruit-name">Amigo Pet</div>
-            <div class="fruit-rarity">Especial</div>
+    // Adicionar opção para vender pets
+    for(const petType in gameState.ownedPets) {
+      if(gameState.ownedPets[petType]) {
+        const pet = PETS[petType];
+        const sellPrice = Math.floor(pet.cost * 0.5); // Vende por 50% do valor
+        
+        const petEl = document.createElement('div');
+        petEl.className = 'fruit-item';
+        petEl.style.background = 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)';
+        petEl.innerHTML = `
+          <div style="display: flex; align-items: center;">
+            <span class="fruit-icon">${pet.icon}</span>
+            <div class="fruit-details">
+              <div class="fruit-name">${pet.name}</div>
+              <div class="fruit-rarity">Especial</div>
+            </div>
           </div>
-        </div>
-        <div class="fruit-price">2000 <small>moedas</small></div>
-      `;
-      
-      petEl.addEventListener('click', () => {
-        if(confirm('Vender seu Amigo Pet por 2000 moedas?')) {
-          gameState.coins += 2000;
-          gameState.petOwned = false;
-          updateUI();
-          closeShopFruits();
-          draw();
-        }
-      });
-      
-      shopListFruits.appendChild(petEl);
+          <div class="fruit-price">${sellPrice} <small>moedas</small></div>
+        `;
+        
+        petEl.addEventListener('click', () => {
+          if(confirm(`Vender seu ${pet.name} por ${sellPrice} moedas?`)) {
+            gameState.coins += sellPrice;
+            delete gameState.ownedPets[petType];
+            updateUI();
+            closeShopFruits();
+            draw();
+          }
+        });
+        
+        shopListFruits.appendChild(petEl);
+      }
     }
   }
 
@@ -1265,17 +1498,60 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildShopListSeeds(){
     shopListSeeds.innerHTML = '';
     
-    // Agrupar sementes por raridade
+    // Adicionar contador de tempo para evento especial
+    if(Date.now() < eventEndTime) {
+      const eventTimer = document.createElement('div');
+      eventTimer.style.background = 'rgba(255, 215, 0, 0.2)';
+      eventTimer.style.padding = '8px';
+      eventTimer.style.borderRadius = '12px';
+      eventTimer.style.marginBottom = '16px';
+      eventTimer.style.textAlign = 'center';
+      eventTimer.style.fontWeight = '600';
+      eventTimer.style.color = '#b8860b';
+      
+      const timeLeft = eventEndTime - Date.now();
+      const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      
+      eventTimer.innerHTML = `
+        <div>🌳 Evento Especial: Árvore de Algodão 🌳</div>
+        <div style="font-size: 0.9rem;">Disponível por mais: ${daysLeft}d ${Math.floor(hoursLeft)}h</div>
+        <div style="font-size: 0.8rem; margin-top: 4px;">Chance de aparecer: 0.2%</div>
+      `;
+      shopListSeeds.appendChild(eventTimer);
+    }
+    
+    // Criar array com todas as sementes disponíveis no estoque
+    const availableSeeds = [];
+    SEEDS.forEach((seed, idx) => {
+      // Só mostra a Árvore de Algodão se estiver no estoque e o evento estiver ativo
+      if(seed.name === 'Árvore de Algodão') {
+        if(shopStock[idx] > 0 && Date.now() < eventEndTime) {
+          availableSeeds.push({...seed, stock: shopStock[idx], idx});
+        }
+        return;
+      }
+      
+      if(shopStock[idx] > 0) {
+        availableSeeds.push({...seed, stock: shopStock[idx], idx});
+      }
+    });
+    
+    // Ordenar do mais barato ao mais caro
+    availableSeeds.sort((a, b) => a.cost - b.cost);
+    
+    // Agrupar por raridade mantendo a ordem de preço
     const seedsByRarity = {
       'Comum': [],
       'Raro': [],
       'Épica': [],
       'Lendária': [],
-      'Mitico': []
+      'Mitico': [],
+      'Especial': []
     };
     
-    SEEDS.forEach((seed, idx) => {
-      seedsByRarity[seed.rarity].push({...seed, stock: shopStock[idx] || 0});
+    availableSeeds.forEach(seed => {
+      seedsByRarity[seed.rarity].push(seed);
     });
     
     // Adicionar cada grupo de raridade
@@ -1289,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', () => {
       rarityHeader.style.color = getRarityColor(rarity);
       shopListSeeds.appendChild(rarityHeader);
       
-      // Adicionar cada semente do grupo
+      // Adicionar cada semente do grupo (já está ordenado por preço)
       seeds.forEach(seed => {
         const seedEl = document.createElement('div');
         seedEl.className = 'seed-item';
@@ -1309,7 +1585,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stockInfo = document.createElement('div');
         stockInfo.style.fontSize = '0.85rem';
         stockInfo.style.color = '#475569';
-        stockInfo.textContent = `Stock: ${seed.stock}`;
+        stockInfo.textContent = `Estoque: ${seed.stock}`;
         seedDesc.appendChild(document.createElement('br'));
         seedDesc.appendChild(stockInfo);
         
@@ -1320,7 +1596,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Comprar</span>
           <span>${seed.cost} moedas</span>
         `;
-        buyBtn.onclick = () => buySeed(SEEDS.indexOf(seed));
+        buyBtn.onclick = () => buySeed(seed.idx);
         
         seedEl.appendChild(seedHeader);
         seedEl.appendChild(seedDesc);
@@ -1330,44 +1606,53 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // Adicionar seção do pet
-    const petHeader = document.createElement('h4');
-    petHeader.textContent = 'Especial (1)';
-    petHeader.style.margin = '16px 0 8px 0';
-    petHeader.style.color = '#f59e0b';
-    shopListSeeds.appendChild(petHeader);
+    // Adicionar seção de pets (ordenados do mais barato ao mais caro)
+    const petsHeader = document.createElement('h4');
+    petsHeader.textContent = 'Pets (3)';
+    petsHeader.style.margin = '16px 0 8px 0';
+    petsHeader.style.color = '#f59e0b';
+    shopListSeeds.appendChild(petsHeader);
     
-    const petEl = document.createElement('div');
-    petEl.className = 'seed-item';
+    // Criar array de pets e ordenar por preço
+    const availablePets = Object.entries(PETS).map(([petType, pet]) => ({
+      petType,
+      ...pet
+    })).sort((a, b) => a.cost - b.cost);
     
-    const petHeaderDiv = document.createElement('div');
-    petHeaderDiv.className = 'seed-header';
-    petHeaderDiv.innerHTML = `
-      <span class="seed-icon">${PET_ICON}</span>
-      <span class="seed-name">Amigo Pet</span>
-      <span class="seed-rarity rarity-legendary-bg">Especial</span>
-    `;
-    
-    const petDesc = document.createElement('div');
-    petDesc.className = 'seed-desc';
-    petDesc.textContent = 'Pet amigo que custa 50000 moedas, reduz 5 segundos do tempo de espera das frutas. Apenas um disponível por vez.';
-    
-    const petBuyBtn = document.createElement('button');
-    petBuyBtn.className = 'seed-buy-btn';
-    petBuyBtn.disabled = gameState.coins < PET_COST || gameState.petOwned;
-    petBuyBtn.innerHTML = `
-      <span>Comprar</span>
-      <span>${PET_COST} moedas</span>
-    `;
-    petBuyBtn.onclick = buyPet;
-    
-    petEl.appendChild(petHeaderDiv);
-    petEl.appendChild(petDesc);
-    petEl.appendChild(petBuyBtn);
-    
-    shopListSeeds.appendChild(petEl);
+    // Adicionar cada pet (já ordenado)
+    availablePets.forEach(({petType, name, icon, desc, cost}) => {
+      const petEl = document.createElement('div');
+      petEl.className = 'seed-item';
+      
+      const petHeaderDiv = document.createElement('div');
+      petHeaderDiv.className = 'seed-header';
+      petHeaderDiv.innerHTML = `
+        <span class="seed-icon">${icon}</span>
+        <span class="seed-name">${name}</span>
+        <span class="seed-rarity rarity-legendary-bg">Pet</span>
+      `;
+      
+      const petDesc = document.createElement('div');
+      petDesc.className = 'seed-desc';
+      petDesc.textContent = desc;
+      
+      const petBuyBtn = document.createElement('button');
+      petBuyBtn.className = 'seed-buy-btn';
+      petBuyBtn.disabled = gameState.coins < cost || gameState.ownedPets[petType];
+      petBuyBtn.innerHTML = `
+        <span>Comprar</span>
+        <span>${cost} moedas</span>
+      `;
+      petBuyBtn.onclick = () => buyPet(petType);
+      
+      petEl.appendChild(petHeaderDiv);
+      petEl.appendChild(petDesc);
+      petEl.appendChild(petBuyBtn);
+      
+      shopListSeeds.appendChild(petEl);
+    });
   }
-  
+
   function getRarityColor(rarity) {
     switch(rarity) {
       case 'Comum': return '#166534';
@@ -1375,6 +1660,7 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'Épica': return '#5b21b6';
       case 'Lendária': return '#92400e';
       case 'Mitico': return '#991b1b';
+      case 'Especial': return '#b8860b';
       default: return '#475569';
     }
   }
@@ -1399,46 +1685,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buySeed(seedIdx){
     const seed = SEEDS[seedIdx];
-    if(gameState.coins < seed.cost){
-      alert('Moedas insuficientes para comprar essa semente.');
-      return;
+    
+    // Verifica se tem moedas suficientes
+    if(gameState.coins < seed.cost) {
+      alert('Moedas insuficientes para comprar essa semente!');
+      return false;
     }
-    if(!shopStock[seedIdx] || shopStock[seedIdx] <= 0){
+    
+    // Verifica se tem estoque
+    if(typeof shopStock[seedIdx] === 'undefined' || shopStock[seedIdx] <= 0) {
       alert('Esta semente está esgotada no momento!');
-      return;
+      return false;
     }
     
-    gameState.coins -= seed.cost;
-    shopStock[seedIdx]--;
-    
+    // Atualiza o inventário
     if(!gameState.inventory[seedIdx]) {
       gameState.inventory[seedIdx] = 0;
     }
     gameState.inventory[seedIdx]++;
     
-    alert(`Você comprou uma semente de ${seed.name} e está no inventário para plantar.`);
+    // Debita o valor e atualiza o estoque
+    gameState.coins -= seed.cost;
+    shopStock[seedIdx]--;
+    
+    // Atualiza a UI
     updateUI();
     
-    // Atualiza a lista da loja se estiver aberta
+    // Se a loja estiver aberta, atualiza a lista
     if(shopModalSeeds.style.display === 'flex') {
       buildShopListSeeds();
     }
+    
+    alert(`Você comprou 1 semente de ${seed.name} por ${seed.cost} moedas!`);
+    return true;
   }
 
-  function buyPet(){
-    if(gameState.coins < PET_COST){
-      alert('Moedas insuficientes para comprar o Pet.');
+  function buyPet(petType){
+    const pet = PETS[petType];
+    
+    if(gameState.coins < pet.cost){
+      alert('Moedas insuficientes para comprar este Pet.');
       return;
     }
-    if(gameState.petOwned){
-      alert('Você já possui o Pet amigo.');
+    
+    if(gameState.ownedPets[petType]){
+      alert(`Você já possui o ${pet.name}.`);
       return;
     }
-    gameState.coins -= PET_COST;
-    gameState.petOwned = true;
-    alert('Você comprou o Amigo Pet! Seu tempo de crescimento das frutas foi reduzido em 5 segundos.');
+    
+    gameState.coins -= pet.cost;
+    gameState.ownedPets[petType] = true;
+    
+    // Inicia o efeito do pet
+    if(petType === 'raccoon') {
+      // Guaxinim coleta sementes a cada 2 minutos
+      setInterval(() => {
+        if(gameState.ownedPets.raccoon) {
+          const seedName = pet.effect(gameState);
+          if(seedName) {
+            alert(`Seu Guaxinim Coletor encontrou uma semente de ${seedName}!`);
+          }
+        }
+      }, 2 * 60 * 1000); // 2 minutos
+    } else if(petType === 'bee') {
+      // Abelha poliniza plantas a cada 1 minuto
+      setInterval(() => {
+        if(gameState.ownedPets.bee) {
+          const plantName = pet.effect(gameState);
+          if(plantName) {
+            alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em 1.4x!`);
+          }
+        }
+      }, 60 * 1000); // 1 minuto
+    }
+    
+    alert(`Você comprou o ${pet.name}! ${pet.desc}`);
     updateUI();
     closeShopSeeds();
+    draw();
   }
 
   // Save / Load system
@@ -1448,10 +1772,11 @@ document.addEventListener('DOMContentLoaded', () => {
         coins: gameState.coins,
         garden: gameState.garden,
         inventory: gameState.inventory,
-        petOwned: gameState.petOwned,
+        ownedPets: gameState.ownedPets,
         playerSkin: gameState.playerSkinImg ? gameState.playerSkinImg.src : null,
         playerPos: gameState.playerPos,
-        username: gameState.username
+        username: gameState.username,
+        eventEndTime: eventEndTime
       };
       localStorage.setItem('growAGardenSave', JSON.stringify(gameData));
       alert('Jogo salvo com sucesso!');
@@ -1472,15 +1797,47 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.garden = data.garden ?? Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
       gameState.inventory = data.inventory ?? {};
       if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
-      gameState.petOwned = data.petOwned ?? false;
+      gameState.ownedPets = data.ownedPets || {};
       gameState.playerPos = data.playerPos ?? {x:0, y:Math.floor(GRID_ROWS/2)};
       gameState.username = data.username || 'Jogador';
+      eventEndTime = data.eventEndTime || (Date.now() + (14 * 24 * 60 * 60 * 1000));
 
-      petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+      // Posiciona os pets perto do jogador
+      petPositions = {
+        cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+        raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+        bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+      };
 
       if(data.playerSkin === characterImgMale.src) gameState.playerSkinImg = characterImgMale;
       else if(data.playerSkin === characterImgFemale.src) gameState.playerSkinImg = characterImgFemale;
       else gameState.playerSkinImg = characterImgMale;
+
+      // Reinicia os efeitos dos pets
+      for(const petType in gameState.ownedPets) {
+        if(gameState.ownedPets[petType]) {
+          const pet = PETS[petType];
+          if(petType === 'raccoon') {
+            setInterval(() => {
+              if(gameState.ownedPets.raccoon) {
+                const seedName = pet.effect(gameState);
+                if(seedName) {
+                  alert(`Seu Guaxinim Coletor encontrou uma semente de ${seedName}!`);
+                }
+              }
+            }, 2 * 60 * 1000);
+          } else if(petType === 'bee') {
+            setInterval(() => {
+              if(gameState.ownedPets.bee) {
+                const plantName = pet.effect(gameState);
+                if(plantName) {
+                  alert(`Sua Abelha Polinizadora aumentou o valor de uma ${plantName} em 1.4x!`);
+                }
+              }
+            }, 60 * 1000);
+          }
+        }
+      }
 
       alert('Jogo carregado com sucesso!');
       updateUI();
@@ -1577,13 +1934,12 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         break;
       case '5':
+        case 'p':
+        case 'P':
         plantSeedFromInventory();
         e.preventDefault();
         break;
       case '6':
-        harvestPlants();
-        e.preventDefault();
-        break;
       case 'h':
       case 'H':
         harvestPlants();
@@ -1628,11 +1984,21 @@ document.addEventListener('DOMContentLoaded', () => {
     draw();
     addSaveLoadButtons();
     setupMobileControls();
-    petPos = { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y };
+    
+    // Configura posições iniciais dos pets
+    petPositions = {
+      cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+      raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+      bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+    };
+    
+    // Move pets aleatoriamente a cada 2 segundos
     setInterval(() => {
-      movePetRandomly();
+      movePetsRandomly();
       draw();
     }, 2000);
+    
+    // Tocar música
     const playPromise = gameOst.play();
     if(playPromise !== undefined){
       playPromise.catch(() => {});
@@ -1650,37 +2016,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mobileControls.style.display = 'flex';
 
-    document.getElementById('btn-up').addEventListener('touchstart', e=>{
+    // Controles de direção
+    document.getElementById('btn-up').addEventListener('touchstart', (e) => {
       movePlayer(0, -1);
       e.preventDefault();
-    });
-    document.getElementById('btn-down').addEventListener('touchstart', e=>{
+    }, {passive: false});
+    
+    document.getElementById('btn-down').addEventListener('touchstart', (e) => {
       movePlayer(0, 1);
       e.preventDefault();
-    });
-    document.getElementById('btn-left').addEventListener('touchstart', e=>{
+    }, {passive: false});
+    
+    document.getElementById('btn-left').addEventListener('touchstart', (e) => {
       movePlayer(-1, 0);
       e.preventDefault();
-    });
-    document.getElementById('btn-right').addEventListener('touchstart', e=>{
+    }, {passive: false});
+    
+    document.getElementById('btn-right').addEventListener('touchstart', (e) => {
       movePlayer(1, 0);
       e.preventDefault();
-    });
-    document.getElementById('btn-plant').addEventListener('click', e=>{
+    }, {passive: false});
+
+    // Botões de ação
+    document.getElementById('btn-plant').addEventListener('click', (e) => {
       plantSeedFromInventory();
       e.preventDefault();
     });
-    document.getElementById('btn-harvest').addEventListener('click', e=>{
+    
+    document.getElementById('btn-harvest').addEventListener('click', (e) => {
       harvestPlants();
       e.preventDefault();
     });
-    document.getElementById('btn-shop-fruits').addEventListener('click', e=>{
+    
+    document.getElementById('btn-shop-fruits').addEventListener('click', (e) => {
       openShopFruits();
       e.preventDefault();
     });
-    document.getElementById('btn-shop-seeds').addEventListener('click', e=>{
+    
+    document.getElementById('btn-shop-seeds').addEventListener('click', (e) => {
       openShopSeeds();
       e.preventDefault();
+    });
+
+    // Melhor feedback visual
+    const buttons = document.querySelectorAll('.mobile-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('touchstart', () => {
+        btn.style.transform = 'scale(0.95)';
+        btn.style.opacity = '0.8';
+      });
+      
+      btn.addEventListener('touchend', () => {
+        btn.style.transform = '';
+        btn.style.opacity = '';
+      });
     });
   }
 
