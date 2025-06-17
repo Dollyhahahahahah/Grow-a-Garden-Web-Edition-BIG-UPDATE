@@ -55,6 +55,12 @@
     margin-bottom: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     border-radius: 24px;
+    animation: swing 3s ease-in-out infinite;
+    transform-origin: top center;
+  }
+  @keyframes swing {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
   }
   #start-button, #login-button {
     background: #00bcd4;
@@ -684,6 +690,77 @@
     border: 2px solid white;
   }
 
+  /* Tooltip para mostrar progresso da planta */
+  .plant-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    transform: translate(-50%, -100%);
+    white-space: nowrap;
+  }
+
+  /* Efeitos de clima */
+  .rain-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: rgba(174, 214, 241, 0.3);
+    z-index: 50;
+  }
+
+  .lightning-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 60;
+    animation: lightningFlash 0.2s;
+  }
+
+  @keyframes lightningFlash {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Efeitos de status */
+  .status-effects {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 70;
+  }
+
+  .status-effect {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .status-effect:last-child {
+    margin-bottom: 0;
+  }
+
+  .status-icon {
+    margin-right: 5px;
+    font-size: 14px;
+  }
+
   @media (max-width: 768px) {
     #mobile-controls {
       display: flex;
@@ -766,6 +843,11 @@
       <div id="achievements-list"></div>
     </div>
     
+    <div id="status-effects" class="status-effects" style="display: none;">
+      <h4>Efeitos Ativos</h4>
+      <div id="effect-list"></div>
+    </div>
+    
     <p><strong>Controles:</strong> Use as setas ou WASD para mover o personagem. Pressione <kbd>E</kbd> próximo ao vendedor de frutas para abrir a lojinha de vendas. Pressione <kbd>Q</kbd> próximo ao vendedor de sementes para abrir a loja de sementes e comprar. Pressione <kbd>5</kbd> para plantar e <kbd>6</kbd> para colher. O crescimento das plantas é automático (aprox. 1 minuto por planta). Colha a planta quando estiver madura.</p>
   </div>
 
@@ -815,6 +897,13 @@
   </div>
 </div>
 
+<!-- Efeitos de clima -->
+<div id="rain-effect" class="rain-effect" style="display: none;"></div>
+<div id="lightning-effect" class="lightning-effect" style="display: none;"></div>
+
+<!-- Tooltip para plantas -->
+<div id="plant-tooltip" class="plant-tooltip" style="display: none;"></div>
+
 <!-- Background OST - Música atualizada -->
 <audio id="game-ost" loop preload="auto">
   <source src="https://www.youtube.com/watch?v=cl68eYKej7k" type="audio/mpeg">
@@ -845,6 +934,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameContainer = document.getElementById('game-container');
   const mobileControls = document.getElementById('mobile-controls');
   const achievementsList = document.getElementById('achievements-list');
+  const plantTooltip = document.getElementById('plant-tooltip');
+  const rainEffect = document.getElementById('rain-effect');
+  const lightningEffect = document.getElementById('lightning-effect');
+  const statusEffectsPanel = document.getElementById('status-effects');
+  const effectList = document.getElementById('effect-list');
   
   const characterImgMale = new Image();
   characterImgMale.src = 'https://i.pinimg.com/originals/d7/18/dc/d718dcbe1181bc4a702e3743c4366ea6.png';
@@ -891,12 +985,12 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   const rarityTimes = {
-    'Comum': 10000,
-    'Raro': 30000,
-    'Épica': 60000,
-    'Lendária': 90000,
-    'Mitico': 120000,
-    'Especial': 30000
+    'Comum': 60000,    // 1 minuto
+    'Raro': 120000,    // 2 minutos
+    'Épica': 180000,   // 3 minutos
+    'Lendária': 300000, // 5 minutos
+    'Mitico': 420000,   // 7 minutos
+    'Especial': 300000 // 5 minutos
   };
 
   // Variantes de plantas
@@ -905,7 +999,32 @@ document.addEventListener('DOMContentLoaded', () => {
     GOLDEN: { chance: 0.03, bonus: 2, color: '#ffd700', symbol: '★' },
     SILVER: { chance: 0.07, bonus: 1.5, color: '#c0c0c0', symbol: '✦' },
     CRYSTAL: { chance: 0.05, bonus: 1.8, color: '#00bcd4', symbol: '❄' },
-    POLINIZED: { chance: 0, bonus: 1.4, color: '#f1c40f', symbol: '🐝' } // Nova variante para plantas polinizadas
+    POLINIZED: { chance: 0, bonus: 1.4, color: '#f1c40f', symbol: '🐝' }, // Nova variante para plantas polinizadas
+    WET: { chance: 0, bonus: 0.9, color: '#3498db', symbol: '💧' }, // Efeito de chuva
+    SHINY: { chance: 0, bonus: 1.3, color: '#f1c40f', symbol: '⚡' } // Efeito de raio
+  };
+
+  // Efeitos de clima
+  const WEATHER_EFFECTS = {
+    RAIN: {
+      name: 'Chuva',
+      icon: '💧',
+      desc: 'Acelera o crescimento das plantas em 20%',
+      duration: 30000, // 30 segundos
+      effect: (plant) => {
+        plant.growTimeMs = plant.growTimeMs * 0.8; // 20% mais rápido
+        plant.variant = 'WET';
+      }
+    },
+    LIGHTNING: {
+      name: 'Raio',
+      icon: '⚡',
+      desc: 'Aumenta o valor das plantas em 30%',
+      duration: 15000, // 15 segundos
+      effect: (plant) => {
+        plant.variant = 'SHINY';
+      }
+    }
   };
 
   // PREÇOS BALANCEADOS (COMPRA/VENDA)
@@ -990,6 +1109,66 @@ document.addEventListener('DOMContentLoaded', () => {
       desc: 'Tenha um pet no nível máximo',
       icon: '⭐',
       condition: (game) => Object.values(game.ownedPets).some(pet => pet.level >= 5)
+    },
+    // Novas conquistas
+    {
+      id: 'rain_experience',
+      name: 'Experiência na Chuva',
+      desc: 'Experimente o efeito de chuva pela primeira vez',
+      icon: '🌧️',
+      condition: (game) => game.weatherEffectsExperienced?.includes('RAIN')
+    },
+    {
+      id: 'lightning_strike',
+      name: 'Raio de Sorte',
+      desc: 'Experimente o efeito de raio pela primeira vez',
+      icon: '⚡',
+      condition: (game) => game.weatherEffectsExperienced?.includes('LIGHTNING')
+    },
+    {
+      id: 'master_gardener',
+      name: 'Mestre Jardineiro',
+      desc: 'Plante 50 plantas',
+      icon: '👨‍🌾',
+      condition: (game) => game.plantsPlanted >= 50
+    },
+    {
+      id: 'harvest_king',
+      name: 'Rei da Colheita',
+      desc: 'Colha 100 plantas',
+      icon: '👑',
+      condition: (game) => game.plantsHarvested >= 100
+    },
+    {
+      id: 'variant_hunter',
+      name: 'Caçador de Variantes',
+      desc: 'Tenha plantas de todas as variantes',
+      icon: '🌈',
+      condition: (game) => {
+        const variants = new Set();
+        for(let y = 0; y < GRID_ROWS; y++) {
+          for(let x = 0; x < GRID_COLS; x++) {
+            if(game.garden[y][x]) {
+              variants.add(game.garden[y][x].variant);
+            }
+          }
+        }
+        return variants.size >= Object.keys(PLANT_VARIANTS).length;
+      }
+    },
+    {
+      id: 'shopaholic',
+      name: 'Comprador Compulsivo',
+      desc: 'Gaste 500,000 moedas em compras',
+      icon: '🛒',
+      condition: (game) => game.totalSpent >= 500000
+    },
+    {
+      id: 'event_participant',
+      name: 'Participante de Evento',
+      desc: 'Compre um item de evento especial',
+      icon: '🎉',
+      condition: (game) => game.eventItemsPurchased >= 1
     }
   ];
 
@@ -1097,7 +1276,15 @@ document.addEventListener('DOMContentLoaded', () => {
     unlockedAchievements: {},
     playerSkinImg: null,
     username: '',
-    playerId: Math.random().toString(36).substr(2, 9)
+    playerId: Math.random().toString(36).substr(2, 9),
+    plantsPlanted: 0,
+    plantsHarvested: 0,
+    totalSpent: 0,
+    eventItemsPurchased: 0,
+    weatherEffectsExperienced: [],
+    activeWeatherEffects: {},
+    lastWeatherEvent: 0,
+    weatherCooldown: 300000 // 5 minutos entre eventos de clima
   };
   
   let petPositions = {
@@ -1130,9 +1317,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Tratamento especial para Árvore de Algodão - 0.2% de chance
+    // Tratamento especial para Árvore de Algodão - agora com 1.5% de chance
     const cottonIndex = SEEDS.findIndex(s => s.name === 'Árvore de Algodão');
-    if(Math.random() < 0.002 && Date.now() < eventEndTime) { // 0.2% de chance
+    if(Math.random() < 0.015 && Date.now() < eventEndTime) { // 1.5% de chance
       shopStock[cottonIndex] = 1; // Apenas 1 disponível
     }
     
@@ -1198,7 +1385,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function drawPlant(r, c, plant) {
     const seed = SEEDS[plant.seedIdx];
-    const elapsed = Date.now() - plant.plantedAt;
     let growTimeMs = rarityTimes[seed.rarity] || 60000;
     
     // Aplica efeito do pet gato se existir
@@ -1208,8 +1394,15 @@ document.addEventListener('DOMContentLoaded', () => {
       growTimeMs = Math.max(1000, growTimeMs - (5000 + bonus * 1000));
     }
     
+    // Aplica efeito de chuva se ativo
+    if(gameState.activeWeatherEffects.RAIN) {
+      growTimeMs = growTimeMs * 0.8; // 20% mais rápido
+    }
+    
+    const elapsed = Date.now() - plant.plantedAt;
     const progress = Math.min(elapsed/growTimeMs,1);
-    const radius = progress * (TILE_SIZE / 2 - 8);
+    const sizeProgress = Math.min(progress * 1.5, 1); // Faz a planta crescer mais rápido visualmente
+    const radius = sizeProgress * (TILE_SIZE / 2 - 8);
     
     // Cor baseada na variante
     let plantColor = seed.color;
@@ -1217,6 +1410,8 @@ document.addEventListener('DOMContentLoaded', () => {
     else if(plant.variant === 'SILVER') plantColor = '#c0c0c0';
     else if(plant.variant === 'CRYSTAL') plantColor = '#00bcd4';
     else if(plant.variant === 'POLINIZED') plantColor = '#f1c40f';
+    else if(plant.variant === 'WET') plantColor = '#3498db';
+    else if(plant.variant === 'SHINY') plantColor = '#f1c40f';
     
     ctx.beginPath();
     if(plant.variant !== 'NORMAL') {
@@ -1239,7 +1434,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.arc(c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2 + 8, radius > 8 ? radius : 8, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.font = '36px serif';
+    
+    // Desenha o ícone da fruta com tamanho proporcional ao progresso
+    const iconSize = 16 + (sizeProgress * 20); // Tamanho do ícone varia de 16 a 36
+    ctx.font = `${iconSize}px serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(seed.icon, c*TILE_SIZE + TILE_SIZE/2, r*TILE_SIZE + TILE_SIZE/2);
@@ -1304,7 +1502,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     activePets.forEach(({ petType, level = 1 }) => {
       const pet = PETS[petType];
-      const pos = petPositions[petType];
+      const pos = petPositions[petType.toLowerCase()];
       const px = pos.x * TILE_SIZE;
       const py = pos.y * TILE_SIZE;
       const scale = PET_LEVELS[level].scale;
@@ -1346,8 +1544,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // 70% de chance de se mover (30% de ficar parado)
       if(Math.random() < 0.7) {
         const randomDirection = directions[Math.floor(Math.random() * directions.length)];
-        const newX = petPositions[petType].x + randomDirection.dx;
-        const newY = petPositions[petType].y + randomDirection.dy;
+        const newX = petPositions[petType.toLowerCase()].x + randomDirection.dx;
+        const newY = petPositions[petType.toLowerCase()].y + randomDirection.dy;
         
         // Verificar limites do mapa e colisões
         if(newX >= 0 && newX < GRID_COLS && newY >=0 && newY < GRID_ROWS) {
@@ -1359,8 +1557,8 @@ document.addEventListener('DOMContentLoaded', () => {
             Object.values(petPositions).some(pos => pos.x === newX && pos.y === newY);
           
           if(!isBlocked) {
-            petPositions[petType].x = newX;
-            petPositions[petType].y = newY;
+            petPositions[petType.toLowerCase()].x = newX;
+            petPositions[petType.toLowerCase()].y = newY;
           }
         }
       }
@@ -1378,6 +1576,7 @@ document.addEventListener('DOMContentLoaded', () => {
     coinCountEl.textContent = 'Moedas: ' + gameState.coins;
     updateInventoryUI();
     checkAchievements();
+    updateWeatherEffectsUI();
   }
 
   function updateInventoryUI(){
@@ -1420,13 +1619,19 @@ document.addEventListener('DOMContentLoaded', () => {
       inventoryList.appendChild(fruitsHeader);
 
       for(const idx of fruitKeys){
-        const count = gameState.inventory.fruits[idx];
-        if(count > 0){
+        const fruitData = gameState.inventory.fruits[idx];
+        if(fruitData.count > 0){
           const seedIdx = Number(idx);
           const item = document.createElement('div');
           item.className = 'inventory-item';
           const seed = SEEDS[seedIdx];
-          item.textContent = `${seed.icon} ${seed.name} maduro x${count}`;
+          
+          let variantSymbol = '';
+          if(fruitData.variant !== 'NORMAL') {
+            variantSymbol = PLANT_VARIANTS[fruitData.variant].symbol;
+          }
+          
+          item.textContent = `${seed.icon} ${seed.name} ${variantSymbol} x${fruitData.count} (${fruitData.sellPrice} moedas cada)`;
           inventoryList.appendChild(item);
         }
       }
@@ -1483,6 +1688,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Atualizar UI dos efeitos de clima
+  function updateWeatherEffectsUI() {
+    effectList.innerHTML = '';
+    
+    if(Object.keys(gameState.activeWeatherEffects).length === 0) {
+      statusEffectsPanel.style.display = 'none';
+      return;
+    }
+    
+    statusEffectsPanel.style.display = 'block';
+    
+    for(const [effectKey, effectData] of Object.entries(gameState.activeWeatherEffects)) {
+      const effect = WEATHER_EFFECTS[effectKey];
+      const timeLeft = Math.max(0, effectData.endTime - Date.now());
+      const secondsLeft = Math.ceil(timeLeft / 1000);
+      
+      const effectEl = document.createElement('div');
+      effectEl.className = 'status-effect';
+      effectEl.innerHTML = `
+        <span class="status-icon">${effect.icon}</span>
+        <span>${effect.name} (${secondsLeft}s)</span>
+      `;
+      effectList.appendChild(effectEl);
+    }
+  }
+
   function movePlayer(dx, dy){
     const nx = gameState.playerPos.x + dx;
     const ny = gameState.playerPos.y + dy;
@@ -1490,19 +1721,8 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.playerPos.x = nx;
       gameState.playerPos.y = ny;
       
-      // Move os pets para perto do jogador
-      petPositions.cat = { 
-        x: Math.max(0, gameState.playerPos.x -1), 
-        y: gameState.playerPos.y 
-      };
-      petPositions.raccoon = { 
-        x: Math.max(0, gameState.playerPos.x -2), 
-        y: gameState.playerPos.y 
-      };
-      petPositions.bee = { 
-        x: Math.max(0, gameState.playerPos.x -3), 
-        y: gameState.playerPos.y 
-      };
+      // Remove a lógica que movia os pets junto com o jogador
+      // Agora os pets se movem aleatoriamente por conta própria
       
       draw();
     }
@@ -1536,7 +1756,8 @@ document.addEventListener('DOMContentLoaded', () => {
       seedIdx,
       plantedAt: Date.now(),
       isMature: false,
-      variant
+      variant,
+      growTimeMs: rarityTimes[SEEDS[seedIdx].rarity] || 60000
     };
     
     let variantMsg = '';
@@ -1545,6 +1766,7 @@ document.addEventListener('DOMContentLoaded', () => {
       variantMsg = ` (Variante ${variant.toLowerCase()} - ${variantInfo.symbol})`;
     }
     
+    gameState.plantsPlanted++;
     alert(`Você plantou a semente de ${SEEDS[seedIdx].name}${variantMsg}.`);
     updateUI();
     draw();
@@ -1558,7 +1780,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const seed = SEEDS[plant.seedIdx];
-    let growTimeMs = rarityTimes[seed.rarity] || 60000;
+    let growTimeMs = plant.growTimeMs || rarityTimes[seed.rarity] || 60000;
     
     // Aplica efeito do pet gato se existir
     if(gameState.ownedPets.CAT) {
@@ -1574,18 +1796,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     if(!gameState.inventory.fruits) gameState.inventory.fruits = {};
-    if(!gameState.inventory.fruits[plant.seedIdx]) gameState.inventory.fruits[plant.seedIdx] = 0;
+    if(!gameState.inventory.fruits[plant.seedIdx]) gameState.inventory.fruits[plant.seedIdx] = { count: 0, variant: plant.variant, sellPrice: 0 };
     
     // Calcula o preço com bônus da variante
     const variantBonus = PLANT_VARIANTS[plant.variant].bonus;
     const sellPrice = Math.round(seed.sellPrice * variantBonus);
     
-    gameState.inventory.fruits[plant.seedIdx]++;
+    // Armazena a fruta com a variante e preço calculado
+    gameState.inventory.fruits[plant.seedIdx].count++;
+    gameState.inventory.fruits[plant.seedIdx].variant = plant.variant;
+    gameState.inventory.fruits[plant.seedIdx].sellPrice = sellPrice;
+    
     gameState.garden[pos.y][pos.x] = null;
+    gameState.plantsHarvested++;
     
     let variantMsg = '';
     if(plant.variant !== 'NORMAL') {
-      variantMsg = ` (Variante ${plant.variant.toLowerCase()} - valor ${variantBonus}x)`;
+      variantMsg = ` (Variante ${plant.variant.toLowerCase()} - valor ${variantBonus.toFixed(1)}x)`;
     }
     
     alert(`Você colheu 1x ${seed.name}${variantMsg} para vender por ${sellPrice} moedas!`);
@@ -1610,26 +1837,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Criar array com todas as frutas disponíveis no inventário
     const fruitsForSale = Object.entries(gameState.inventory.fruits)
-      .map(([seedIdx, count]) => {
+      .map(([seedIdx, fruitData]) => {
         const seed = SEEDS[Number(seedIdx)];
         return {
           seedIdx: Number(seedIdx),
-          count,
-          totalPrice: seed.sellPrice * count,
+          count: fruitData.count,
+          totalPrice: fruitData.sellPrice * fruitData.count,
+          variant: fruitData.variant,
           seed
         };
       })
       .sort((a, b) => a.totalPrice - b.totalPrice); // Ordenar do mais barato ao mais caro
 
     // Adicionar cada fruta à lista
-    fruitsForSale.forEach(({seedIdx, count, totalPrice, seed}) => {
+    fruitsForSale.forEach(({seedIdx, count, totalPrice, variant, seed}) => {
       const fruitEl = document.createElement('div');
       fruitEl.className = 'fruit-item';
+      
+      let variantSymbol = '';
+      if(variant !== 'NORMAL') {
+        variantSymbol = PLANT_VARIANTS[variant].symbol;
+      }
+      
       fruitEl.innerHTML = `
         <div style="display: flex; align-items: center;">
           <span class="fruit-icon">${seed.icon}</span>
           <div class="fruit-details">
-            <div class="fruit-name">${seed.name} ×${count}</div>
+            <div class="fruit-name">${seed.name} ${variantSymbol} ×${count}</div>
             <div class="fruit-rarity rarity-${seed.rarity.toLowerCase()}">${seed.rarity}</div>
           </div>
         </div>
@@ -1677,14 +1911,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function sellFruit(seedIdx, count){
-    if(!gameState.inventory.fruits || gameState.inventory.fruits[seedIdx] < count) return;
-    gameState.inventory.fruits[seedIdx] -= count;
-    if(gameState.inventory.fruits[seedIdx] <= 0){
+    if(!gameState.inventory.fruits || !gameState.inventory.fruits[seedIdx] || gameState.inventory.fruits[seedIdx].count < count) return;
+    
+    const fruitData = gameState.inventory.fruits[seedIdx];
+    const gained = fruitData.sellPrice * count;
+    
+    gameState.inventory.fruits[seedIdx].count -= count;
+    if(gameState.inventory.fruits[seedIdx].count <= 0){
       delete gameState.inventory.fruits[seedIdx];
     }
-    const gained = SEEDS[seedIdx].sellPrice * count;
+    
     gameState.coins += gained;
-    alert(`Você vendeu ${count} ${SEEDS[seedIdx].name}(s) por ${gained} moedas!`);
+    
+    let variantMsg = '';
+    if(fruitData.variant !== 'NORMAL') {
+      const variantInfo = PLANT_VARIANTS[fruitData.variant];
+      variantMsg = ` (Variante ${fruitData.variant.toLowerCase()} - ${variantInfo.symbol})`;
+    }
+    
+    alert(`Você vendeu ${count} ${SEEDS[seedIdx].name}${variantMsg} por ${gained} moedas!`);
     updateUI();
     closeShopFruits();
     draw();
@@ -1729,7 +1974,7 @@ document.addEventListener('DOMContentLoaded', () => {
       eventTimer.innerHTML = `
         <div>🌳 Evento Especial: Árvore de Algodão 🌳</div>
         <div style="font-size: 0.9rem;">Disponível por mais: ${daysLeft}d ${Math.floor(hoursLeft)}h</div>
-        <div style="font-size: 0.8rem; margin-top: 4px;">Chance de aparecer: 0.2%</div>
+        <div style="font-size: 0.8rem; margin-top: 4px;">Chance de aparecer: 1.5%</div>
       `;
       shopListSeeds.appendChild(eventTimer);
     }
@@ -1919,7 +2164,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Debita o valor e atualiza o estoque
     gameState.coins -= seed.cost;
+    gameState.totalSpent += seed.cost;
     shopStock[seedIdx]--;
+    
+    // Verifica se é um item de evento
+    if(seed.name === 'Árvore de Algodão') {
+      gameState.eventItemsPurchased++;
+    }
     
     // Atualiza a UI
     updateUI();
@@ -1953,6 +2204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     gameState.coins -= pet.cost;
+    gameState.totalSpent += pet.cost;
     gameState.ownedPets[petType] = {
       type: petType,
       level: 1,
@@ -1997,6 +2249,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       }, 60 * 1000); // 1 minuto
+    } else if(petType === 'CAT') {
+      // Efeito do gato é aplicado diretamente nas plantas
+      // Adicionamos XP quando plantas são colhidas
     }
     
     alert(`Você comprou o ${pet.name}! ${pet.desc}`);
@@ -2017,7 +2272,13 @@ document.addEventListener('DOMContentLoaded', () => {
         playerSkin: gameState.playerSkinImg ? gameState.playerSkinImg.src : null,
         playerPos: gameState.playerPos,
         username: gameState.username,
-        eventEndTime: eventEndTime
+        eventEndTime: eventEndTime,
+        plantsPlanted: gameState.plantsPlanted,
+        plantsHarvested: gameState.plantsHarvested,
+        totalSpent: gameState.totalSpent,
+        eventItemsPurchased: gameState.eventItemsPurchased,
+        weatherEffectsExperienced: gameState.weatherEffectsExperienced,
+        playerId: gameState.playerId
       };
       localStorage.setItem('growAGardenSave', JSON.stringify(gameData));
       alert('Jogo salvo com sucesso!');
@@ -2042,13 +2303,19 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.unlockedAchievements = data.unlockedAchievements || {};
       gameState.playerPos = data.playerPos ?? {x:0, y:Math.floor(GRID_ROWS/2)};
       gameState.username = data.username || 'Jogador';
+      gameState.plantsPlanted = data.plantsPlanted || 0;
+      gameState.plantsHarvested = data.plantsHarvested || 0;
+      gameState.totalSpent = data.totalSpent || 0;
+      gameState.eventItemsPurchased = data.eventItemsPurchased || 0;
+      gameState.weatherEffectsExperienced = data.weatherEffectsExperienced || [];
+      gameState.playerId = data.playerId || Math.random().toString(36).substr(2, 9);
       eventEndTime = data.eventEndTime || (Date.now() + (14 * 24 * 60 * 60 * 1000));
 
       // Posiciona os pets perto do jogador
       petPositions = {
-        CAT: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
-        RACCOON: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
-        BEE: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+        cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+        raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+        bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
       };
 
       if(data.playerSkin === characterImgMale.src) gameState.playerSkinImg = characterImgMale;
@@ -2142,6 +2409,120 @@ document.addEventListener('DOMContentLoaded', () => {
     infoPanel.appendChild(container);
   }
 
+  // Função para mostrar tooltip com progresso da planta
+  function showPlantTooltip(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    const col = Math.floor(x / TILE_SIZE);
+    const row = Math.floor(y / TILE_SIZE);
+    
+    if(col >= 0 && col < GRID_COLS && row >= 0 && row < GRID_ROWS) {
+      const plant = gameState.garden[row][col];
+      if(plant) {
+        const seed = SEEDS[plant.seedIdx];
+        let growTimeMs = plant.growTimeMs || rarityTimes[seed.rarity] || 60000;
+        
+        // Aplica efeito do pet gato se existir
+        if(gameState.ownedPets.CAT) {
+          const petData = gameState.ownedPets.CAT;
+          const bonus = PET_LEVELS[petData.level].bonus;
+          growTimeMs = Math.max(1000, growTimeMs - (5000 + bonus * 1000));
+        }
+        
+        // Aplica efeito de chuva se ativo
+        if(gameState.activeWeatherEffects.RAIN) {
+          growTimeMs = growTimeMs * 0.8; // 20% mais rápido
+        }
+        
+        const elapsed = Date.now() - plant.plantedAt;
+        const progress = Math.min(elapsed/growTimeMs, 1);
+        const percentage = Math.round(progress * 100);
+        
+        plantTooltip.style.display = 'block';
+        plantTooltip.style.left = `${event.clientX}px`;
+        plantTooltip.style.top = `${event.clientY - 30}px`;
+        
+        let variantInfo = '';
+        if(plant.variant !== 'NORMAL') {
+          const variant = PLANT_VARIANTS[plant.variant];
+          variantInfo = ` (${variant.symbol} ${variant.bonus.toFixed(1)}x)`;
+        }
+        
+        plantTooltip.textContent = `${seed.name} - ${percentage}%${variantInfo}`;
+        return;
+      }
+    }
+    
+    plantTooltip.style.display = 'none';
+  }
+
+  // Função para iniciar efeito de clima
+  function startWeatherEffect(effectKey) {
+    const effect = WEATHER_EFFECTS[effectKey];
+    if(!effect) return;
+    
+    // Adiciona aos efeitos ativos
+    gameState.activeWeatherEffects[effectKey] = {
+      startTime: Date.now(),
+      endTime: Date.now() + effect.duration
+    };
+    
+    // Adiciona aos efeitos experimentados
+    if(!gameState.weatherEffectsExperienced.includes(effectKey)) {
+      gameState.weatherEffectsExperienced.push(effectKey);
+    }
+    
+    // Mostra efeito visual
+    if(effectKey === 'RAIN') {
+      rainEffect.style.display = 'block';
+      setTimeout(() => {
+        rainEffect.style.display = 'none';
+      }, effect.duration);
+    } else if(effectKey === 'LIGHTNING') {
+      lightningEffect.style.display = 'block';
+      setTimeout(() => {
+        lightningEffect.style.display = 'none';
+      }, 200); // Flash rápido
+    }
+    
+    // Aplica efeito às plantas existentes
+    for(let y = 0; y < GRID_ROWS; y++) {
+      for(let x = 0; x < GRID_COLS; x++) {
+        if(gameState.garden[y][x]) {
+          effect.effect(gameState.garden[y][x]);
+        }
+      }
+    }
+    
+    // Remove o efeito após a duração
+    setTimeout(() => {
+      delete gameState.activeWeatherEffects[effectKey];
+      updateWeatherEffectsUI();
+    }, effect.duration);
+    
+    updateWeatherEffectsUI();
+    draw();
+    
+    // Mostra mensagem
+    alert(`Evento climático: ${effect.name}! ${effect.desc}`);
+  }
+
+  // Função para gerar eventos climáticos aleatórios
+  function generateWeatherEvents() {
+    // Verifica se está no cooldown
+    if(Date.now() - gameState.lastWeatherEvent < gameState.weatherCooldown) return;
+    
+    // 10% de chance de ocorrer um evento climático a cada minuto
+    if(Math.random() < 0.1) {
+      const effects = Object.keys(WEATHER_EFFECTS);
+      const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+      startWeatherEffect(randomEffect);
+      gameState.lastWeatherEvent = Date.now();
+    }
+  }
+
   shopCloseBtnFruits.addEventListener('click', closeShopFruits);
   shopCloseBtnSeeds.addEventListener('click', closeShopSeeds);
 
@@ -2210,6 +2591,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Event listeners para tooltip
+  canvas.addEventListener('mousemove', showPlantTooltip);
+  canvas.addEventListener('mouseout', () => {
+    plantTooltip.style.display = 'none';
+  });
+
   // Start button opens login screen
   startButton.addEventListener('click', () => {
     startScreen.style.display = 'none';
@@ -2249,9 +2636,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Configura posições iniciais dos pets
     petPositions = {
-      CAT: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
-      RACCOON: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
-      BEE: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
+      cat: { x: Math.max(0, gameState.playerPos.x -1), y: gameState.playerPos.y },
+      raccoon: { x: Math.max(0, gameState.playerPos.x -2), y: gameState.playerPos.y },
+      bee: { x: Math.max(0, gameState.playerPos.x -3), y: gameState.playerPos.y }
     };
     
     // Move pets aleatoriamente a cada 2 segundos
@@ -2259,6 +2646,9 @@ document.addEventListener('DOMContentLoaded', () => {
       movePetsRandomly();
       draw();
     }, 2000);
+    
+    // Verifica eventos climáticos a cada minuto
+    setInterval(generateWeatherEvents, 60000);
     
     // Tocar música
     const playPromise = gameOst.play();
