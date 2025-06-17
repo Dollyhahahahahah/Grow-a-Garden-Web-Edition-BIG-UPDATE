@@ -1,10 +1,1 @@
-🌴!GROW A GARDEN WEB EDITION!🌴
-
-UPDATE LOG -
-
-2 NEW PETS
-3 NEW FRUITS 
-SPECIAL EVENT FRUIT
-STOCK SYSTEM
-RESET STOCK SYSTEM
-(mobile controls under maintence)
+ENTRE NO NOSSO DISCORD: https://discord.gg/EMkpGfDFph
